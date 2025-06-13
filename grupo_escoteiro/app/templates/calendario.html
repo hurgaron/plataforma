@@ -1,0 +1,214 @@
+{% extends "layout.html" %}
+{% block title %}Calendário de Atividades{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">📅 Calendário de Atividades</h2>
+    <a href="/calendario/imprimir?mes={{ hoje.month }}&ano={{ hoje.year }}"
+      class="inline-flex items-center px-4 py-2 mt-4 sm:mt-0 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded hover:bg-gray-100 shadow-sm">
+      🖨️ Imprimir Agenda
+    </a>
+  </div>
+
+  <div class="mb-6 flex flex-wrap gap-4">
+    {% for cal in calendarios %}
+    <label class="inline-flex items-center text-sm space-x-2 bg-gray-100 px-3 py-1 rounded shadow-sm">
+      <input type="checkbox" class="filtro-calendario" value="{{ cal.calid }}" checked>
+      <span class="flex items-center">
+        <span class="inline-block w-3 h-3 rounded-full mr-2" style="background-color: {{ cal.cor }}"></span>
+        {{ cal.calnome }}
+      </span>
+    </label>
+    {% endfor %}
+  </div>
+
+  <div id="calendar" class="bg-white shadow rounded-xl p-4" style="min-height: 600px;"></div>
+</div>
+
+<!-- Modal -->
+<div id="modalAtividade"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+  <div class="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
+    <h3 class="text-lg font-bold mb-4 text-gray-800">Nova Atividade</h3>
+    <form id="formAtividade" method="post" class="space-y-4">
+      <input type="hidden" id="atid" name="atid">
+      <input type="hidden" name="data_inicio" id="data_inicio">
+      <input type="hidden" name="data_fim" id="data_fim">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Título</label>
+        <input type="text" name="titulo"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Descrição</label>
+        <textarea name="descricao" rows="3"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Local</label>
+        <input type="text" name="local"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Calendário</label>
+        <select name="calid"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          required>
+          {% for cal in calendarios %}
+          <option value="{{ cal.calid }}" data-color="{{ cal.cor }}" style="color: {{ cal.cor }}">{{ cal.calnome }}
+          </option>
+          {% endfor %}
+        </select>
+        <div class="mt-2">
+          <span class="inline-block w-4 h-4 rounded-full border" id="corVisual"
+            style="background-color: #2563eb"></span>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="fecharModal()"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded hover:bg-gray-100 text-gray-700">
+          Cancelar
+        </button>
+        <button type="submit"
+          class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Salvar
+        </button>
+        <button type="button" id="btnExcluir" onclick="excluirAtividade()"
+          class="hidden inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700">
+          Excluir
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'pt-br',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,listWeek'
+      },
+      events: '/api/atividades',
+      editable: true,
+
+      dateClick: function (info) {
+        abrirModal(info.dateStr);
+      },
+
+      eventClick: function (info) {
+        const atid = info.event.id;
+        fetch(`/api/atividade/${atid}`)
+          .then(r => r.json())
+          .then(data => {
+            document.getElementById("formAtividade").reset();
+            document.getElementById("formAtividade").action = `/calendario/atividade/${atid}/editar`;
+            document.getElementById("data_inicio").value = data.data_inicio;
+            document.getElementById("data_fim").value = data.data_fim;
+            document.querySelector("input[name='titulo']").value = data.titulo;
+            document.querySelector("textarea[name='descricao']").value = data.descricao || '';
+            document.querySelector("input[name='local']").value = data.local || '';
+            document.querySelector("select[name='calid']").value = data.calid;
+            document.getElementById("btnExcluir").classList.remove("hidden");
+            document.getElementById("modalAtividade").classList.remove("hidden");
+            document.getElementById("atid").value = atid;
+          });
+      },
+
+      eventDrop: function (info) {
+        atualizarDatas(info.event);
+      },
+
+      eventResize: function (info) {
+        atualizarDatas(info.event);
+      }
+    });
+
+    calendar.render();
+
+    document.querySelectorAll(".filtro-calendario").forEach(cb => {
+      cb.addEventListener("change", () => {
+        const ativos = Array.from(document.querySelectorAll(".filtro-calendario"))
+          .filter(c => c.checked)
+          .map(c => c.value);
+
+        calendar.getEvents().forEach(event => {
+          if (ativos.includes(event.groupId)) {
+            event.setProp("display", "auto");
+          } else {
+            event.setProp("display", "none");
+          }
+        });
+      });
+    });
+
+    window.abrirModal = function (dataStr) {
+      document.getElementById("formAtividade").reset();
+      document.getElementById("formAtividade").action = "/calendario/atividade/nova";
+      document.getElementById("data_inicio").value = dataStr + "T09:00:00";
+      document.getElementById("data_fim").value = dataStr + "T10:00:00";
+      document.getElementById("modalAtividade").classList.remove("hidden");
+      document.getElementById("btnExcluir").classList.add("hidden");
+    };
+
+    window.fecharModal = function () {
+      document.getElementById("modalAtividade").classList.add("hidden");
+    };
+
+    window.excluirAtividade = function () {
+      const atid = document.getElementById("atid").value;
+      if (!atid) return;
+
+      if (confirm("Tem certeza que deseja excluir esta atividade?")) {
+        fetch(`/calendario/atividade/${atid}/excluir`, {
+          method: "POST"
+        }).then(() => {
+          fecharModal();
+          window.location.href = "/calendario";
+        });
+      }
+    };
+
+    function atualizarDatas(event) {
+      fetch(`/calendario/atividade/${event.id}/atualizar_data`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          data_inicio: event.start.toISOString(),
+          data_fim: event.end ? event.end.toISOString() : event.start.toISOString()
+        })
+      }).then(r => {
+        if (!r.ok) {
+          alert("Erro ao salvar a nova data.");
+        }
+      });
+    }
+  });
+
+  const select = document.querySelector("select[name='calid']");
+  const corPreview = document.getElementById("corVisual");
+
+  function atualizarCorPreview() {
+    const selected = select.options[select.selectedIndex];
+    corPreview.style.backgroundColor = selected.getAttribute("data-color");
+  }
+
+  select.addEventListener("change", atualizarCorPreview);
+  document.addEventListener("DOMContentLoaded", atualizarCorPreview);
+</script>
+
+{% endblock %}

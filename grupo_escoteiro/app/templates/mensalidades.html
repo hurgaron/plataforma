@@ -1,0 +1,100 @@
+<!-- mensalidades.html -->
+{% extends "layout.html" %}
+{% block title %}Mensalidades{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">💳 Mensalidades Lançadas</h2>
+
+  <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+    <p class="text-sm text-gray-600">Visualize e gerencie as mensalidades de todos os jovens cadastrados.</p>
+    <a href="/mensalidades/novo"
+       class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700">
+      ➕ Nova Mensalidade
+    </a>
+  </div>
+
+  <form method="get" class="mb-6 flex flex-wrap gap-4">
+    <select name="mes" class="rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+      <option value="0">Todos os meses</option>
+      {% for m in range(1, 13) %}
+      <option value="{{ m }}" {% if mes == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+    <select name="ano" class="rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+      <option value="0">Todos os anos</option>
+      {% for a in range(2023, 2031) %}
+      <option value="{{ a }}" {% if ano == a %}selected{% endif %}>{{ a }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700">
+      Filtrar
+    </button>
+  </form>
+
+  <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-md">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Jovem</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Vencimento</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Valor</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Observação</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for m in mensalidades %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 text-sm text-gray-800">{{ m.jovem.jovnome }}</td>
+          <td class="px-4 py-3 text-sm text-gray-800">{{ m.mendata_venc.strftime('%d/%m/%Y') }}</td>
+          <td class="px-4 py-3 text-sm text-gray-800">R$ {{ '%.2f' | format(m.menvalor) }}</td>
+          <td class="px-4 py-3 text-sm">
+            {% if m.menstatus == "pendente" %}
+            <button onclick="pagarMensalidade({{ m.menid }}, this)"
+                    class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 text-xs">
+              ✅ Pagar
+            </button>
+            {% else %}
+            <span class="text-green-700 font-semibold">Pago</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-800">{{ m.menobservacao or '-' }}</td>
+          <td class="px-4 py-3 text-sm">
+            <a href="/mensalidades/{{ m.menid }}/editar"
+               class="text-blue-600 hover:text-blue-800 hover:underline mr-3">Editar</a>
+            <form method="post" action="/mensalidades/{{ m.menid }}/excluir" class="inline">
+              <button type="submit" onclick="return confirm('Deseja excluir esta mensalidade?')"
+                      class="text-red-600 hover:text-red-800 hover:underline">Excluir</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="px-6 py-6 text-center text-sm text-gray-500">Nenhuma mensalidade cadastrada.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  async function pagarMensalidade(id, botao) {
+    if (!confirm("Deseja realmente marcar como paga esta mensalidade?")) return;
+    botao.disabled = true;
+    botao.innerText = "Processando...";
+    const resp = await fetch(`/mensalidades/${id}/pagar`, {
+      method: "POST",
+      headers: { "X-Requested-With": "XMLHttpRequest" }
+    });
+    if (resp.ok) {
+      botao.parentElement.innerHTML = 'Pago';
+    } else {
+      alert("Erro ao marcar como pago.");
+      botao.disabled = false;
+      botao.innerText = "✅ Pagar";
+    }
+  }
+</script>
+{% endblock %}

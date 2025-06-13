@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Gestão 360{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar"
+      class="w-64 bg-white shadow-md fixed md:static z-50 h-full transform transition-transform duration-300 md:translate-x-0 -translate-x-full">
+      <div class="p-6 border-b flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">Gestão 360</h1>
+        <button class="text-gray-500 md:hidden" onclick="toggleSidebar()">✕</button>
+      </div>
+      <nav class="p-4 space-y-3 text-sm">
+        <!-- Admin -->
+        <div>
+          <button onclick="toggleGrupo('grupo-admin')"
+            class="w-full flex justify-between items-center px-4 py-2 font-semibold text-gray-600 hover:bg-gray-100">
+            Administração <span>▾</span>
+          </button>
+          <ul id="grupo-admin" class="space-y-1 pl-4 mt-1">
+            <li><a href="/dashboard" class="block px-2 py-1 rounded hover:bg-blue-50">🏠 Dashboard</a></li>
+            <li><a href="/usuario/usuarios" class="block px-2 py-1 rounded hover:bg-blue-50">👤 Usuários</a></li>
+            <li>
+              <a href="/empresa/editar" class="block px-2 py-1 rounded hover:bg-blue-50">
+                🏢 Dados da Empresa
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Financeiro -->
+        <div>
+          <button onclick="toggleGrupo('grupo-financeiro')"
+            class="w-full flex justify-between items-center px-4 py-2 font-semibold text-gray-600 hover:bg-gray-100">
+            Financeiro <span>▾</span>
+          </button>
+          <ul id="grupo-financeiro" class="space-y-1 pl-4 mt-1">
+            <li><a href="/mensalidades" class="block px-2 py-1 rounded hover:bg-blue-50">💰 Mensalidades</a></li>
+            <li><a href="/relatorios/mensalidades" class="block px-2 py-1 rounded hover:bg-blue-50">📄 Relatórios</a>
+            </li>
+            <li><a href="/contas" class="block px-2 py-1 rounded hover:bg-blue-50">📊 Contas</a></li>
+            <li><a href="/fluxo-caixa" class="block px-2 py-1 rounded hover:bg-blue-50">📈 Fluxo de Caixa</a></li>
+          </ul>
+        </div>
+
+        <!-- RH -->
+        <div>
+          <button onclick="toggleGrupo('grupo-rh')"
+            class="w-full flex justify-between items-center px-4 py-2 font-semibold text-gray-600 hover:bg-gray-100">
+            Recursos Humanos <span>▾</span>
+          </button>
+          <ul id="grupo-rh" class="space-y-1 pl-4 mt-1">
+            <li><a href="/jovens" class="block px-2 py-1 rounded hover:bg-blue-50">🧒 Jovens</a></li>
+            <li><a href="/adultos" class="block px-2 py-1 rounded hover:bg-blue-50">🧑‍💼 Adultos</a></li>
+            <li><a href="/fornecedores" class="block px-2 py-1 rounded hover:bg-blue-50">🧾 Fornecedores </a></li>
+          </ul>
+        </div>
+
+        <!-- Almoxarifado -->
+        <div>
+          <button onclick="toggleGrupo('grupo-almox')"
+            class="w-full flex justify-between items-center px-4 py-2 font-semibold text-gray-600 hover:bg-gray-100">
+            Almoxarifado <span>▾</span>
+          </button>
+          <ul id="grupo-almox" class="space-y-1 pl-4 mt-1">
+            <li><a href="/almoxarifado" class="block px-2 py-1 rounded hover:bg-blue-50">📦 Materiais</a></li>
+            <li><a href="/almoxarifado/movimentacoes" class="block px-2 py-1 rounded hover:bg-blue-50">🔄
+                Movimentações</a></li>
+          </ul>
+        </div>
+
+        <!-- Calendário -->
+        <div>
+          <button onclick="toggleGrupo('grupo-calendario')"
+            class="w-full flex justify-between items-center px-4 py-2 font-semibold text-gray-600 hover:bg-gray-100">
+            Calendário <span>▾</span>
+          </button>
+          <ul id="grupo-calendario" class="space-y-1 pl-4 mt-1">
+            <li><a href="/calendario" class="block px-2 py-1 rounded hover:bg-blue-50">📅 Atividades</a></li>
+            <li><a href="/calendario/gerenciar" class="block px-2 py-1 rounded hover:bg-blue-50">➕ Gerenciar</a></li>
+          </ul>
+        </div>
+
+        <!-- Sistema -->
+        <div>
+          <ul class="space-y-1 pt-4 border-t">
+            <li><a href="/logout" class="block px-4 py-2 text-red-600 hover:bg-red-50 rounded">🚪 Sair</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Overlay Mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden md:hidden" onclick="toggleSidebar()">
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="bg-white shadow p-4 flex justify-between items-center">
+        <button class="text-gray-600 md:hidden" onclick="toggleSidebar()">☰</button>
+        <h2 class="text-xl font-bold text-blue-600">Gestão 360</h2>
+        {% if usuario %}
+        <div class="text-sm text-right">
+          <p class="font-medium">Olá, {{ usuario.usunome }}!</p>
+          <a href="/logout" class="text-red-500 hover:underline">Sair</a>
+        </div>
+        {% endif %}
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      const isHidden = sidebar.classList.contains("-translate-x-full");
+
+      if (isHidden) {
+        sidebar.classList.remove("-translate-x-full");
+        overlay.classList.remove("hidden");
+      } else {
+        sidebar.classList.add("-translate-x-full");
+        overlay.classList.add("hidden");
+      }
+    }
+
+    function toggleGrupo(id) {
+      const grupo = document.getElementById(id);
+      grupo.classList.toggle("hidden");
+    }
+  </script>
+</body>
+
+</html>

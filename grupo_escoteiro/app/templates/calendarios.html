@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block title %}Gerenciar Calendários{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">📂 Gerenciar Calendários</h2>
+
+  <form method="post" class="bg-white rounded-lg shadow p-6 space-y-6 ring-1 ring-gray-200">
+    <div>
+      <label for="calnome" class="block text-sm font-medium text-gray-700">Nome do Calendário</label>
+      <input type="text" id="calnome" name="calnome" required
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+    </div>
+
+    <div>
+      <label for="cor" class="block text-sm font-medium text-gray-700">Cor (hex)</label>
+      <input type="color" id="cor" name="cor" value="#2563eb"
+        class="mt-1 h-10 w-20 rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+    </div>
+
+    <div class="pt-2">
+      <button type="submit"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Salvar
+      </button>
+    </div>
+  </form>
+
+  <h3 class="text-xl font-semibold text-gray-800 mt-10 mb-4">📅 Calendários Existentes</h3>
+  <ul class="space-y-4">
+    {% for cal in calendarios %}
+    {% set possui_atividades = cal.atividades|length > 0 %}
+    <li class="bg-gray-50 p-4 rounded shadow-sm flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-4 h-4 rounded-full border" style="background-color: {{ cal.cor }}"></span>
+        <span class="text-sm text-gray-800">{{ cal.calnome }}</span>
+      </div>
+      <div class="flex gap-2">
+        <form method="post" action="/calendario/{{ cal.calid }}/editar" class="flex gap-2 items-center">
+          <input type="text" name="calnome" value="{{ cal.calnome }}" class="input input-sm" required>
+          <input type="color" name="cor" value="{{ cal.cor }}" class="h-8 w-10 rounded border">
+          <button type="submit" class="btn btn-sm btn-outline">💾</button>
+        </form>
+        {% if not cal.atividades %}
+        <form method="post" action="/calendario/{{ cal.calid }}/excluir"
+          onsubmit="return confirm('Excluir este calendário?')">
+          <button type="submit" class="btn btn-sm btn-error">🗑️</button>
+        </form>
+        {% else %}
+        <span class="text-xs text-gray-500 italic">Possui atividades</span>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

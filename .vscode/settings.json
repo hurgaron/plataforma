@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./gestao-escoteira/app"
+    ]
+}

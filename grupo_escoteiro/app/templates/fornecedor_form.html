@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}{{ 'Editar Fornecedor' if fornecedor else 'Novo Fornecedor' }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">{{ 'Editar Fornecedor' if fornecedor else 'Novo Fornecedor' }}</h2>
+
+  <form method="post"
+        action="{{ '/fornecedores/' + fornecedor.forcod|string + '/editar' if fornecedor else '/fornecedores/novo' }}"
+        class="space-y-6 bg-white p-6 rounded-lg shadow ring-1 ring-gray-200">
+
+    <div>
+      <label for="fornome" class="block text-sm font-medium text-gray-700">Nome do Fornecedor</label>
+      <input type="text" name="fornome" required
+             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             value="{{ fornecedor.fornome if fornecedor else '' }}">
+    </div>
+
+    <div>
+      <label for="forcnpj" class="block text-sm font-medium text-gray-700">CNPJ</label>
+      <input type="text" name="forcnpj"
+             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             value="{{ fornecedor.forcnpj if fornecedor else '' }}">
+    </div>
+
+    <div>
+      <label for="foremail" class="block text-sm font-medium text-gray-700">Email</label>
+      <input type="email" name="foremail"
+             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             value="{{ fornecedor.foremail if fornecedor else '' }}">
+    </div>
+
+    <div class="flex justify-end gap-4 pt-2">
+      <a href="/fornecedores"
+         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm rounded hover:bg-gray-100 text-gray-700">
+        Cancelar
+      </a>
+      <button type="submit"
+              class="inline-flex items-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Salvar
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

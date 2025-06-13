@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Mensalidade{% endblock %}
+
+{% block content %}
+<h2 class="text-xl font-bold mb-4">Editar Mensalidade</h2>
+
+<form method="post" action="/mensalidades/{{ mensalidade.menid }}/editar" class="bg-white p-4 rounded shadow max-w-md">
+    <label class="block mb-2">
+        <span class="text-gray-700">Valor (R$):</span>
+        <input type="number" step="0.01" name="menvalor" value="{{ mensalidade.menvalor }}" required class="w-full p-2 border rounded">
+    </label>
+    <label class="block mb-2">
+        <span class="text-gray-700">Data de Vencimento:</span>
+        <input type="date" name="mendata_venc" value="{{ mensalidade.mendata_venc }}" required class="w-full p-2 border rounded">
+    </label>
+    <label class="block mb-4">
+        <span class="text-gray-700">Observação:</span>
+        <textarea name="menobservacao" class="w-full p-2 border rounded">{{ mensalidade.menobservacao }}</textarea>
+    </label>
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
+</form>
+{% endblock %}

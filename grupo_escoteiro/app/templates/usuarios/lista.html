@@ -1,0 +1,31 @@
+{# templates/usuarios/lista.html #}
+{% extends "layout.html" %}
+{% block title %}Usuários da Empresa{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Usuários da Empresa</h2>
+<a href="/usuario/usuarios/novo" class="inline-block mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow">
+  + Novo Usuário
+</a>
+<div class="overflow-x-auto bg-white rounded shadow">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100 text-left">
+      <tr>
+        <th class="px-4 py-2">Nome</th>
+        <th class="px-4 py-2">E-mail</th>
+        <th class="px-4 py-2">Função</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios %}
+      <tr class="border-b hover:bg-gray-50">
+        <td class="px-4 py-2">{{ u.usunome }}</td>
+        <td class="px-4 py-2">{{ u.usuemail }}</td>
+        <td class="px-4 py-2">{{ u.usufuncao }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+

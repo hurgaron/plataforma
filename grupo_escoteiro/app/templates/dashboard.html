@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Visão Geral do Sistema</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Jovens Ativos</h3>
+    <p class="text-3xl font-semibold text-blue-600">{{ info.total_jovens }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Adultos Ativos</h3>
+    <p class="text-3xl font-semibold text-green-600">{{ info.total_adultos }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Mensalidades Geradas</h3>
+    <p class="text-3xl font-semibold text-purple-600">{{ info.total_mensalidades }}</p>
+    <p class="text-sm text-gray-600">Pagas: {{ info.mensalidades_pagas }} / Em aberto: {{ info.mensalidades_abertas }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Contas a Pagar</h3>
+    <p class="text-2xl font-semibold text-red-600">R$ {{ info.total_a_pagar }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Contas a Receber</h3>
+    <p class="text-2xl font-semibold text-green-600">R$ {{ info.total_a_receber }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Saldo em Caixa</h3>
+    <p class="text-2xl font-semibold text-blue-700">R$ {{ info.saldo_caixa }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4">
+    <h3 class="text-sm text-gray-500">Materiais no Almoxarifado</h3>
+    <p class="text-2xl font-semibold text-yellow-600">{{ info.total_materiais }}</p>
+  </div>
+  <div class="bg-white rounded-2xl shadow p-4 col-span-1 sm:col-span-2">
+    <h3 class="text-sm text-gray-500">Próxima Atividade/Evento</h3>
+    <p class="text-base text-gray-800">{{ info.proxima_atividade or "Nenhuma agendada" }}</p>
+  </div>
+</div>
+
+<div class="bg-white rounded-2xl shadow p-6 max-w-xl mx-auto mt-10">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Distribuição das Mensalidades</h3>
+  <div class="relative h-64">
+    <canvas id="graficoMensalidades"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('graficoMensalidades').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Pagas', 'Em Aberto'],
+      datasets: [{
+        label: 'Mensalidades',
+        data: [{{ info.mensalidades_pagas }}, {{ info.mensalidades_abertas }}],
+        backgroundColor: ['#10B981', '#F59E0B'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

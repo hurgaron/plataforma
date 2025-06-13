@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}Agenda Impressa{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6 print:text-center print:mb-2">Agenda - {{ mes }}/{{ ano }}</h2>
+
+  <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4 print:hidden">
+    <form method="get" class="flex flex-wrap gap-4 items-end">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Mês</label>
+        <input type="number" name="mes" min="1" max="12" value="{{ mes }}"
+          class="mt-1 w-24 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Ano</label>
+        <input type="number" name="ano" value="{{ ano }}"
+          class="mt-1 w-28 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Calendário</label>
+        <select name="calid"
+          class="mt-1 w-48 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <option value="">Todos</option>
+          {% for cal in calendarios %}
+          <option value="{{ cal.calid }}" {% if calid == cal.calid %}selected{% endif %}>{{ cal.calnome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Filtrar
+      </button>
+    </form>
+
+    <button onclick="window.print()"
+      class="inline-flex items-center px-4 py-2 border border-gray-400 text-sm rounded hover:bg-gray-100 text-gray-700">
+      🖨️ Imprimir
+    </button>
+  </div>
+
+  <div class="bg-white p-6 shadow rounded-lg print:shadow-none print:p-0 print:bg-transparent">
+    {% if atividades %}
+    <ul class="divide-y divide-gray-200">
+      {% for a in atividades %}
+      <li class="py-4">
+        <div class="text-sm text-gray-600">{{ a.data_inicio.strftime('%d/%m/%Y %H:%M') }}</div>
+        <div class="text-lg font-semibold text-gray-900">{{ a.titulo }}</div>
+        {% if a.local %}
+        <div class="text-sm text-gray-500">📍 {{ a.local }}</div>
+        {% endif %}
+        {% if a.descricao %}
+        <div class="text-sm text-gray-700 mt-1 whitespace-pre-line">{{ a.descricao }}</div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-sm text-gray-500">Nenhuma atividade cadastrada neste período.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
