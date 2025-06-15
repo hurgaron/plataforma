@@ -20,6 +20,9 @@ from app.routers import fluxo_router
 from app.routers import almoxarifado_router
 from app.routers import movimentacao_router
 from app.routers import calendario_router
+from app.routers import certificados_router
+from app.routers import certificado_numeracao_router
+
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -43,6 +46,9 @@ app.include_router(fluxo_router.router)
 app.include_router(almoxarifado_router.router)
 app.include_router(movimentacao_router.router)
 app.include_router(calendario_router.router)
+app.include_router(certificados_router.router)
+app.include_router(certificado_numeracao_router.router)
+
 
 @app.get("/", include_in_schema=False)
 def root():

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificado</title>
+  <style>
+    @media print {
+      @page { size: A4 landscape; margin: 2cm; }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-900 font-serif px-12 py-8">
+  <div class="text-center mb-8">
+    <img src="/static/images/logo_associacao.png" alt="Logo" class="h-20 mx-auto mb-4">
+    <h1 class="text-4xl font-bold text-purple-800">Certificado</h1>
+  </div>
+
+  <div class="text-lg leading-relaxed text-justify max-w-4xl mx-auto mt-10">
+    <p class="mb-6">
+      Certificamos que <strong class="text-xl text-purple-700">{{ cert.certdestinatario }}</strong>,
+      na condição de <em>{{ cert.certcategoria }}</em>,
+      recebeu o presente certificado referente a <strong>{{ cert.certtipo }}</strong>.
+    </p>
+
+    {% if cert.certdescricao %}
+    <p class="mb-6">
+      {{ cert.certdescricao }}
+    </p>
+    {% endif %}
+
+    <p class="mt-10">
+      Brasília, {{ cert.certdata.strftime('%d de %B de %Y') }}.
+    </p>
+  </div>
+
+  <div class="mt-20 text-center">
+    <div class="border-t border-gray-500 w-64 mx-auto mb-1"></div>
+    <p class="text-sm">Assinatura do Responsável</p>
+  </div>
+
+  <footer class="text-xs text-gray-400 text-center mt-12">
+    Gerado por Finanças em Movimento • www.exemplo.com.br
+  </footer>
+</body>
+</html>

@@ -11,3 +11,5 @@ class Empresa(Base):
     empativo = Column(Boolean, default=True)
 
     usuarios = relationship("Usuario", back_populates="empresa", cascade="all, delete")
+    certificados = relationship("Certificado", back_populates="empresa")
+    numeracoes = relationship("CertificadoNumeracao", back_populates="empresa")

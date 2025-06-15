@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Numerações de Certificados{% endblock %}
+{% block content %}
+<h2 class="text-2xl font-bold text-purple-800 mb-6">Numerações de Certificados</h2>
+
+<a href="/numeracoes/novo" class="inline-block mb-4 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded shadow">
+  ➕ Nova Numeração
+</a>
+
+<div class="overflow-x-auto">
+  <table class="min-w-full bg-white shadow rounded-xl">
+    <thead class="bg-purple-50 text-left text-sm font-semibold text-gray-700">
+      <tr>
+        <th class="px-4 py-3">Prefixo</th>
+        <th class="px-4 py-3">Descrição</th>
+        <th class="px-4 py-3">Próximo Número</th>
+        <th class="px-4 py-3 text-right">Ações</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm text-gray-700 divide-y divide-gray-200">
+      {% for num in numeracoes %}
+      <tr>
+        <td class="px-4 py-2 font-mono font-semibold">{{ num.prefixo }}</td>
+        <td class="px-4 py-2">{{ num.descricao or '—' }}</td>
+        <td class="px-4 py-2">{{ num.prefixo }}{{ "%03d" | format(num.sequencia_atual) }}</td>
+        <td class="px-4 py-2 text-right">
+          <a href="/numeracoes/{{ num.numid }}/editar" class="text-purple-700 hover:underline">Editar</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4" class="px-4 py-6 text-center text-gray-500">Nenhuma numeração cadastrada.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

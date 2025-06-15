@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block title %}Cadastro de Certificado{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cadastro de Certificado</h2>
+
+  <form method="post" class="bg-white p-6 rounded-lg shadow ring-1 ring-gray-200 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Tipo de Certificado</label>
+        <input name="certtipo" list="tipos" required class="input-form" value="{{ cert.certtipo or '' }}">
+        <datalist id="tipos">
+          {% for tipo in tipos_existentes %}
+          <option value="{{ tipo }}">
+          {% endfor %}
+        </datalist>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Numeração Automática</label>
+        <select name="numeracao_id" class="input-form">
+          <option value="">-- Nenhuma --</option>
+          {% for num in numeracoes %}
+          <option value="{{ num.numid }}">{{ num.prefixo }} - {{ num.descricao }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Número de Controle</label>
+      <input name="certnumero" class="input-form" value="{{ cert.certnumero or '' }}" placeholder="Deixe em branco para gerar automaticamente">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Categoria</label>
+      <select id="certcategoria" name="certcategoria" required class="input-form" onchange="atualizarDestinatarios()">
+        <option value="jovem" {% if cert.certcategoria == 'jovem' %}selected{% endif %}>Jovem</option>
+        <option value="adulto" {% if cert.certcategoria == 'adulto' %}selected{% endif %}>Adulto</option>
+        <option value="parceiro" {% if cert.certcategoria == 'parceiro' %}selected{% endif %}>Parceiro</option>
+      </select>
+    </div>
+
+    <div id="grupo-destinatarios">
+      <label class="block text-sm font-medium text-gray-700">Selecionar Jovem ou Adulto</label>
+      <select name="refid" class="input-form">
+        <option value="">-- Nenhum --</option>
+        {% for jovem in jovens %}
+        <option value="{{ jovem.jovcod }}" data-cat="jovem" {% if cert.jovem_id == jovem.jovcod %}selected{% endif %}>[Jovem] {{ jovem.jovnome }}</option>
+        {% endfor %}
+        {% for adulto in adultos %}
+        <option value="{{ adulto.aducod }}" data-cat="adulto" {% if cert.adulto_id == adulto.aducod %}selected{% endif %}>[Adulto] {{ adulto.adunome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Destinatário (nome manual, se parceiro)</label>
+      <input name="certdestinatario" class="input-form" value="{{ cert.certdestinatario or '' }}">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Descrição / Observações</label>
+      <textarea name="certdescricao" class="input-form">{{ cert.certdescricao or '' }}</textarea>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Data de Emissão</label>
+        <input type="date" name="certdata" required class="input-form" value="{{ cert.certdata or now.strftime('%Y-%m-%d') }}">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Data de Geração</label>
+        <input type="date" name="certdata_geracao" required class="input-form" value="{{ cert.certdata_geracao or now.strftime('%Y-%m-%d') }}">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Data de Entrega</label>
+        <input type="date" name="certdata_entrega" class="input-form" value="{{ cert.certdata_entrega or '' }}">
+      </div>
+    </div>
+
+    <div class="text-right pt-4">
+      <button type="submit"
+        class="inline-flex items-center px-4 py-2 bg-purple-700 text-white text-sm font-medium rounded hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+function atualizarDestinatarios() {
+  const categoria = document.getElementById('certcategoria').value;
+  const select = document.querySelector('[name=\"refid\"]');
+  Array.from(select.options).forEach(opt => {
+    if (!opt.value) return;
+    const cat = opt.getAttribute('data-cat');
+    opt.hidden = cat !== categoria;
+  });
+}
+document.addEventListener('DOMContentLoaded', atualizarDestinatarios);
+</script>
+
+<style>
+.input-form {
+  @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-purple-600 focus:border-purple-600 sm:text-sm;
+}
+</style>
+{% endblock %}

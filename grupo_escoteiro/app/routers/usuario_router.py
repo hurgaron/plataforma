@@ -50,7 +50,11 @@ def criar_usuario_admin(empid: int, usunome: str, usuemail: str, ususenha: str, 
 @router.get("/usuarios", response_class=HTMLResponse)
 def listar_usuarios(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     usuarios = db.query(Usuario).filter(Usuario.empid == usuario.empid).all()
-    return templates.TemplateResponse("usuarios/lista.html", {"request": request, "usuarios": usuarios})
+    return templates.TemplateResponse("usuarios/lista.html", {
+        "request": request,
+        "usuarios": usuarios,
+        "usuario": usuario
+    })
 
 @router.get("/usuarios/novo", response_class=HTMLResponse)
 def novo_usuario_form(request: Request):

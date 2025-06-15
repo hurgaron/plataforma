@@ -1,53 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Login - Gestão 360</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Finanças em Movimento</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #8B1E3F 0%, #61142A 50%, #4A0E22 100%);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gray-100">
-  <div class="flex min-h-screen">
-    <!-- Login Form -->
-    <div class="w-full md:w-1/2 flex items-center justify-center px-4">
-      <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Gestão 360 - Login</h1>
 
-        {% if erro %}
-        <div class="mb-4 text-sm text-red-600 bg-red-100 border border-red-300 p-3 rounded">
-          {{ erro }}
+<body class="min-h-screen flex items-center justify-center text-gray-800 relative overflow-hidden">
+  <div class="flex w-full min-h-screen">
+    
+    <!-- LADO DO LOGIN -->
+    <div class="w-full md:w-1/2 flex items-center justify-center p-8 bg-white/90 backdrop-blur-md">
+      <div class="w-full max-w-md">
+        
+        <!-- LOGO E TÍTULO -->
+        <div class="flex items-center gap-3 mb-6">
+          <div class="bg-white text-[#8B1E3F] p-2 rounded-full shadow">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 17l6-6 4 4 6-6" />
+            </svg>
+          </div>
+          <div class="text-left">
+            <h1 class="text-2xl font-bold text-gray-900">Finanças em Movimento</h1>
+            <p class="text-sm text-gray-500">Sistema de Gestão Financeira</p>
+          </div>
         </div>
-        {% endif %}
 
-        <form method="post" action="/login" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-            <input type="email" name="username" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <!-- ALERTA DE ERRO -->
+        <div id="errorAlert" class="{% if not erro %}hidden{% endif %} mb-4 bg-red-100 border border-red-300 text-red-800 text-sm px-4 py-2 rounded flex items-center">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          {{ erro if erro else "Credenciais inválidas. Verifique seu usuário e senha." }}
+        </div>
+
+        <!-- FORMULÁRIO -->
+        <form method="post" action="/login" class="space-y-5 text-left">
+
+          <!-- Usuário -->
+          <div class="relative">
+            <input type="text" name="username" required placeholder="Usuário"
+              class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#8B1E3F] focus:outline-none placeholder-gray-400" />
+            <div class="absolute top-2.5 left-3 text-gray-400">
+              <i class="fas fa-user"></i>
+            </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <input type="password" name="password" required
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <!-- Senha -->
+          <div class="relative">
+            <input type="password" id="password" name="password" required placeholder="Senha"
+              class="w-full px-4 py-2 pl-10 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#8B1E3F] focus:outline-none placeholder-gray-400" />
+            <div class="absolute top-2.5 left-3 text-gray-400">
+              <i class="fas fa-lock"></i>
+            </div>
+            <div id="togglePassword" class="absolute top-2.5 right-3 text-gray-400 cursor-pointer">
+              <i class="far fa-eye"></i>
+            </div>
           </div>
 
+          <!-- Botão -->
           <button type="submit"
-                  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium shadow transition">
-            Entrar
+            class="w-full bg-[#8B1E3F] hover:bg-[#6e182f] text-white py-2 rounded-md font-semibold shadow transition">
+            <i class="fas fa-sign-in-alt mr-2"></i> Entrar
           </button>
         </form>
 
-        <p class="mt-6 text-sm text-center text-gray-600">
-          Ainda não tem acesso?
-          <a href="/registrar" class="text-blue-600 hover:underline font-medium">Criar Conta</a>
-        </p>
+        <!-- Rodapé -->
+        <div class="mt-6 text-sm text-gray-600 text-center">
+          <p>
+            Ainda não tem uma conta?
+            <a href="/registrar" class="text-[#8B1E3F] hover:underline font-medium">Solicitar acesso</a>
+          </p>
+          <p class="mt-4 text-xs text-gray-400">&copy; 2025 Finanças em Movimento</p>
+        </div>
       </div>
     </div>
 
-    <!-- Side Illustration -->
-    <div class="hidden md:flex w-1/2 items-center justify-center bg-blue-100">
-      <img src="/static/images/login_gestao.png" alt="Ilustração de gestão" class="w-3/4 max-w-lg">
+    <!-- LADO DA IMAGEM -->
+    <div class="hidden md:flex w-1/2 items-center justify-center bg-[#61142A]">
+      <img src="/static/images/login_associacao.png" alt="Ilustração de gestão" class="w-3/4 max-w-lg drop-shadow-xl rounded-xl">
     </div>
   </div>
+
+  <!-- Script -->
+  <script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const input = document.getElementById("password");
+      const icon = this.querySelector("i");
+      const tipo = input.getAttribute("type") === "password" ? "text" : "password";
+      input.setAttribute("type", tipo);
+      icon.classList.toggle("fa-eye");
+      icon.classList.toggle("fa-eye-slash");
+    });
+
+    const inputs = document.querySelectorAll("input");
+    inputs.forEach(input => {
+      input.addEventListener("input", () => {
+        document.getElementById("errorAlert")?.classList.add("hidden");
+      });
+    });
+  </script>
 </body>
 </html>
