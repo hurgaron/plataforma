@@ -1,0 +1,24 @@
+<div class="overflow-x-auto">
+  <table class="min-w-full text-sm text-left border border-gray-200">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2">Descrição</th>
+        <th class="px-2 py-2 text-right">Qtd</th>
+        <th class="px-2 py-2 text-right">V. Unitário</th>
+        <th class="px-2 py-2 text-right">Total</th>
+        <th class="px-2 py-2">Tipo</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+      {% for c in custos_realizados %}
+      <tr>
+        <td class="px-4 py-2">{{ c.descricao }}</td>
+        <td class="px-2 py-2 text-right">{{ '%.2f'|format(c.quantidade) }}</td>
+        <td class="px-2 py-2 text-right">R$ {{ '%.2f'|format(c.valor_unitario) }}</td>
+        <td class="px-2 py-2 text-right">R$ {{ '%.2f'|format(c.quantidade * c.valor_unitario) }}</td>
+        <td class="px-2 py-2">{{ c.tipo or 'Outros' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

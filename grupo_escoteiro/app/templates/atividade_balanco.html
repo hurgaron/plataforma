@@ -1,0 +1,252 @@
+{% extends 'layout.html' %}
+{% block title %}Balanço da Atividade{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+  <!-- Cabeçalho -->
+  <div class="space-y-1">
+    <h1 class="text-2xl font-bold text-[#8B1E3F]">📊 Balanço da Atividade</h1>
+    <p class="text-gray-700 text-sm">{{ atividade.titulo }}</p>
+    {% if atividade.local %}<p class="text-gray-500 text-sm">📍 {{ atividade.local }}</p>{% endif %}
+    <p class="text-gray-500 text-sm">🗓️ {{ atividade.data_inicio.strftime('%d/%m/%Y %H:%M') }} — {{
+      atividade.data_fim.strftime('%d/%m/%Y %H:%M') }}</p>
+    <div class="flex justify-end">
+      <a href="/atividade/{{ atividade.atid }}/balanco/impressao" target="_blank"
+        class="inline-flex items-center px-4 py-2 bg-[#8B1E3F] text-white text-sm font-medium rounded hover:bg-[#731937]">
+        🖨️ Imprimir
+      </a>
+    </div>
+  </div>
+
+  <!-- Participantes -->
+  {% if participantes %}
+  <div class="bg-white shadow rounded-xl p-4">
+    <h2 class="text-lg font-semibold text-gray-800 mb-2">👥 Participantes</h2>
+    <ul class="list-disc list-inside text-sm text-gray-700">
+      {% for p in participantes %}
+      <li>{{ p.tipo|capitalize }}: {{ p.nome }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Resumo Previsto -->
+  <div>
+    <h2 class="text-lg font-semibold text-gray-800 mb-2">📈 Resumo Previsto</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="rounded-xl bg-white shadow border border-green-200 p-4 flex flex-col items-start">
+        <span class="text-sm font-medium text-green-600">Receita Prevista</span>
+        <span class="mt-1 text-2xl font-bold text-green-800">{{ ("R$ {:,.2f}".format(total_receita_prev)).replace(",",
+          "X").replace(".", ",").replace("X", ".") }}</span>
+      </div>
+      <div class="rounded-xl bg-white shadow border border-red-200 p-4 flex flex-col items-start">
+        <span class="text-sm font-medium text-red-600">Custo Previsto</span>
+        <span class="mt-1 text-2xl font-bold text-red-800">{{ ("R$ {:,.2f}".format(total_custo_prev)).replace(",",
+          "X").replace(".", ",").replace("X", ".") }}</span>
+      </div>
+      <div class="rounded-xl bg-white shadow border border-blue-200 p-4 flex flex-col items-start">
+        <span class="text-sm font-medium text-blue-600">Saldo Previsto</span>
+        <span
+          class="mt-1 text-2xl font-bold {% if saldo_prev > 0 %}text-green-600{% elif saldo_prev < 0 %}text-red-600{% else %}text-gray-600{% endif %}">{{
+          ("R$ {:,.2f}".format(saldo_prev)).replace(",", "X").replace(".", ",").replace("X", ".") }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumo Realizado -->
+  <div>
+    <h2 class="text-lg font-semibold text-gray-800 mt-6 mb-2">📊 Resumo Realizado</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="rounded-xl bg-white shadow border border-green-200 p-4 flex flex-col items-start">
+        <span class="text-sm font-medium text-green-600">Receita Realizada</span>
+        <span class="mt-1 text-2xl font-bold text-green-800">{{ ("R$ {:,.2f}".format(total_receita_real)).replace(",",
+          "X").replace(".", ",").replace("X", ".") }}</span>
+      </div>
+      <div class="rounded-xl bg-white shadow border border-red-200 p-4 flex flex-col items-start">
+        <span class="text-sm font-medium text-red-600">Custo Realizado</span>
+        <span class="mt-1 text-2xl font-bold text-red-800">{{ ("R$ {:,.2f}".format(total_custo_real)).replace(",",
+          "X").replace(".", ",").replace("X", ".") }}</span>
+      </div>
+      <div class="rounded-xl bg-white shadow border border-blue-200 p-4 flex flex-col items-start">
+        <span class="text-sm font-medium text-blue-600">Saldo Realizado</span>
+        <span
+          class="mt-1 text-2xl font-bold {% if saldo_real > 0 %}text-green-600{% elif saldo_real < 0 %}text-red-600{% else %}text-gray-600{% endif %}">{{
+          ("R$ {:,.2f}".format(saldo_real)).replace(",", "X").replace(".", ",").replace("X", ".") }}</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Receitas agrupadas -->
+  <div class="bg-white shadow rounded-xl p-4 space-y-6">
+    <h2 class="text-lg font-semibold text-gray-800">💰 Receitas</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-semibold text-gray-700 mb-1">Previstas</h3>
+        {% set receitas_previstas = receitas|selectattr('tipo_lancamento.value', 'equalto',
+        'previsto')|sort(attribute='descricao') %}
+        {% set resumo_receitas_previstas = namespace(totais={}) %}
+        {% for r in receitas_previstas %}
+        {% set tipo = r.tipo or 'Outros' %}
+        {% set val = r.quantidade * r.valor_unitario %}
+        {% set resumo_receitas_previstas.totais = resumo_receitas_previstas.totais.update({tipo:
+        (resumo_receitas_previstas.totais.get(tipo, 0) + val)}) or resumo_receitas_previstas.totais %}
+        {% endfor %}
+        <ul class="text-sm text-gray-600 mb-2">
+          {% for tipo, total in resumo_receitas_previstas.totais.items()|sort %}
+          <li>{{ tipo|capitalize }}: R$ {{ "{:,.2f}".format(total).replace(",", "X").replace(".", ",").replace("X", ".")
+            }}</li>
+          {% endfor %}
+        </ul>
+        {% include 'partials/receitas_tabela.html' with context %}
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-gray-700 mb-1">Realizadas</h3>
+        {% set receitas_realizadas = receitas|selectattr('tipo_lancamento.value', 'equalto',
+        'realizado')|sort(attribute='descricao') %}
+        {% set resumo_receitas_realizadas = namespace(totais={}) %}
+        {% for r in receitas_realizadas %}
+        {% set tipo = r.tipo or 'Outros' %}
+        {% set val = r.quantidade * r.valor_unitario %}
+        {% set resumo_receitas_realizadas.totais = resumo_receitas_realizadas.totais.update({tipo:
+        (resumo_receitas_realizadas.totais.get(tipo, 0) + val)}) or resumo_receitas_realizadas.totais %}
+        {% endfor %}
+        <ul class="text-sm text-gray-600 mb-2">
+          {% for tipo, total in resumo_receitas_realizadas.totais.items()|sort %}
+          <li>{{ tipo|capitalize }}: R$ {{ "{:,.2f}".format(total).replace(",", "X").replace(".", ",").replace("X", ".")
+            }}</li>
+          {% endfor %}
+        </ul>
+        {% include 'partials/receitas_tabela_real.html' with context %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Custos agrupados -->
+  <div class="bg-white shadow rounded-xl p-4 space-y-6">
+    <h2 class="text-lg font-semibold text-gray-800">💸 Custos</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-semibold text-gray-700 mb-1">Previstos</h3>
+        {% set custos_previstos = custos|selectattr('tipo_lancamento.value', 'equalto',
+        'previsto')|sort(attribute='descricao') %}
+        {% set resumo_custos_previstos = namespace(totais={}) %}
+        {% for c in custos_previstos %}
+        {% set tipo = c.tipo or 'Outros' %}
+        {% set val = c.quantidade * c.valor_unitario %}
+        {% set resumo_custos_previstos.totais = resumo_custos_previstos.totais.update({tipo:
+        (resumo_custos_previstos.totais.get(tipo, 0) + val)}) or resumo_custos_previstos.totais %}
+        {% endfor %}
+        <ul class="text-sm text-gray-600 mb-2">
+          {% for tipo, total in resumo_custos_previstos.totais.items()|sort %}
+          <li>{{ tipo|capitalize }}: R$ {{ "{:,.2f}".format(total).replace(",", "X").replace(".", ",").replace("X", ".")
+            }}</li>
+          {% endfor %}
+        </ul>
+        {% include 'partials/custos_tabela.html' with context %}
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-gray-700 mb-1">Realizados</h3>
+        {% set custos_realizados = custos|selectattr('tipo_lancamento.value', 'equalto',
+        'realizado')|sort(attribute='descricao') %}
+        {% set resumo_custos_realizados = namespace(totais={}) %}
+        {% for c in custos_realizados %}
+        {% set tipo = c.tipo or 'Outros' %}
+        {% set val = c.quantidade * c.valor_unitario %}
+        {% set resumo_custos_realizados.totais = resumo_custos_realizados.totais.update({tipo:
+        (resumo_custos_realizados.totais.get(tipo, 0) + val)}) or resumo_custos_realizados.totais %}
+        {% endfor %}
+        <ul class="text-sm text-gray-600 mb-2">
+          {% for tipo, total in resumo_custos_realizados.totais.items()|sort %}
+          <li>{{ tipo|capitalize }}: R$ {{ "{:,.2f}".format(total).replace(",", "X").replace(".", ",").replace("X", ".")
+            }}</li>
+          {% endfor %}
+        </ul>
+        {% include 'partials/custos_tabela_real.html' with context %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico -->
+  <div class="bg-white shadow rounded-xl p-4">
+    <canvas id="graficoComparativo" height="160"></canvas>
+  </div>
+
+  <style>
+    @media print {
+
+      button,
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <!-- Script do gráfico -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById("graficoComparativo");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Receita Prevista", "Receita Realizada", "Custo Previsto", "Custo Realizado", "Saldo Previsto", "Saldo Realizado"],
+        datasets: [
+          {
+            label: "Valores (R$)",
+            data: [
+              {{ total_receita_prev }},
+          {{ total_receita_real }},
+              {{ total_custo_prev }},
+      {{ total_custo_real }},
+      {{ saldo_prev }},
+      {{ saldo_real }}
+            ],
+      backgroundColor: [
+      "#d97706",
+      "#8B1E3F",
+      "#e11d48",
+      "#1E40AF",
+      "#047857",
+      "#0f766e"
+    ],
+      borderRadius: 6,
+      borderSkipped: false
+          }
+        ]
+      },
+      options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Comparativo Financeiro da Atividade'
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const value = context.raw || 0;
+              return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            }
+          }
+        }
+      }
+    }
+    });
+  </script>
+</div>
+{% endblock %}

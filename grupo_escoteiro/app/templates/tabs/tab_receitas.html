@@ -1,0 +1,60 @@
+<div id="tab-receitas" class="tab-content hidden space-y-4">
+    <h3 class="text-sm font-semibold text-gray-700">💰 Receitas da Atividade</h3>
+    <div class="border p-4 rounded-md bg-gray-50">
+        <form id="form-receita" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Descrição <span
+                        title="Nome da receita ou origem do valor" class="text-gray-400 cursor-help">(?)</span></label>
+                <input type="text" name="descricao" required placeholder="Ex: Venda de rifas"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Quantidade <span
+                        title="Unidades vendidas ou arrecadadas" class="text-gray-400 cursor-help">(?)</span></label>
+                <input type="number" step="0.01" name="quantidade" required placeholder="Ex: 10"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Valor Unitário <span
+                        title="Valor por unidade (ponto como separador)"
+                        class="text-gray-400 cursor-help">(?)</span></label>
+                <input type="number" step="0.01" name="valor_unitario" required placeholder="Ex: 5.00"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tipo <span title="Classificação da receita"
+                        class="text-gray-400 cursor-help">(?)</span></label>
+                <select name="tipo"
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+                    <option value="">Selecione</option>
+                    <option value="produto">Produto</option>
+                    <option value="servico">Serviço</option>
+                    <option value="doacao">Doação</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Lançamento <span
+                        title="Receita prevista ou já realizada" class="text-gray-400 cursor-help">(?)</span></label>
+                <select name="tipo_lancamento" required
+                    class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500">
+                    <option value="previsto">Previsto</option>
+                    <option value="realizado">Realizado</option>
+                </select>
+            </div>
+            <div class="md:col-span-5">
+                <button type="submit"
+                    class="bg-[#8B1E3F] text-white px-4 py-2 rounded-md w-full hover:bg-[#731A35] transition flex items-center gap-1 justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Adicionar
+                </button>
+            </div>
+        </form>
+    </div>
+    <div id="lista-receitas" class="space-y-2">
+        <p class="text-sm text-gray-600">Carregando receitas...</p>
+    </div>
+</div>

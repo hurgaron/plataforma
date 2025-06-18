@@ -1,45 +1,39 @@
 {% extends "layout.html" %}
 {% block title %}Jovens{% endblock %}
-
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">👦 Jovens Cadastrados</h2>
-
-  <div class="mb-6">
-    <a href="/jovens/novo"
-       class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Jovens Cadastrados</h2>
+    <a href="/jovens/novo" class="bg-[#8B1E3F] text-white px-4 py-2 rounded hover:bg-[#6e182f] text-sm shadow">
       ➕ Novo Jovem
     </a>
   </div>
 
-  <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-md">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-100">
+  <div class="overflow-x-auto bg-white rounded-lg shadow ring-1 ring-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+      <thead class="bg-gray-50">
         <tr>
-          <th class="text-left px-4 py-3 text-sm font-semibold text-gray-700">Nome</th>
-          <th class="text-left px-4 py-3 text-sm font-semibold text-gray-700">Data de Nascimento</th>
-          <th class="text-left px-4 py-3 text-sm font-semibold text-gray-700">Ações</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Nome</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Nascimento</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Registro</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Telefone</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">E-mail</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Responsável</th>
+          <th class="px-4 py-3"></th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
         {% for jovem in jovens %}
         <tr class="hover:bg-gray-50">
-          <td class="px-4 py-3 text-sm text-gray-800">{{ jovem.jovnome }}</td>
-          <td class="px-4 py-3 text-sm text-gray-800">{{ jovem.jovdata_nasc.strftime('%d/%m/%Y') }}</td>
-          <td class="px-4 py-3 text-sm text-gray-800">
-            <a href="/jovens/{{ jovem.jovcod }}/editar"
-               class="text-blue-600 hover:text-blue-800 hover:underline mr-3">Editar</a>
-            <form method="post" action="/jovens/{{ jovem.jovcod }}/excluir" class="inline">
-              <button type="submit" onclick="return confirm('Tem certeza que deseja excluir?')"
-                      class="text-red-600 hover:text-red-800 hover:underline">
-                Excluir
-              </button>
-            </form>
+          <td class="px-4 py-2">{{ jovem.jovnome }}</td>
+          <td class="px-4 py-2">{{ jovem.jovdata_nasc.strftime('%d/%m/%Y') }}</td>
+          <td class="px-4 py-2">{{ jovem.jovregistro }}</td>
+          <td class="px-4 py-2">{{ jovem.jovtelefone }}</td>
+          <td class="px-4 py-2">{{ jovem.jovemail }}</td>
+          <td class="px-4 py-2">{{ jovem.resp_nome }}</td>
+          <td class="px-4 py-2 text-right">
+            <a href="/jovens/{{ jovem.jovcod }}/editar" class="text-blue-600 hover:underline">Editar</a>
           </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="3" class="px-6 py-6 text-center text-sm text-gray-500">Nenhum jovem cadastrado.</td>
         </tr>
         {% endfor %}
       </tbody>

@@ -1,0 +1,70 @@
+<dialog id="modal-atividade" class="rounded-xl shadow-xl max-w-4xl w-full p-0">
+  <form id="form-atividade" method="post" action="/calendario/salvar">
+    <div class="p-6 space-y-6 h-[70vh] overflow-y-auto">
+      <div class="flex justify-between items-start">
+        <h2 class="text-xl font-bold text-gray-800">📋 Detalhes da Atividade</h2>
+        {% if atividade %}
+        <a href="/atividade/{{ atividade.atid }}/balanco" target="_blank"
+          class="text-gray-500 hover:text-[#8B1E3F] text-lg flex items-center gap-1" title="Ver Balanço da Atividade">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-2a4 4 0 018 0v2M9 17h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h6a2 2 0 012 2v2h2a2 2 0 012 2v12a2 2 0 01-2 2z" />
+          </svg> Balanço
+        </a>
+        {% endif %}
+      </div>
+
+      <input type="hidden" name="atid" value="{{ atividade.atid if atividade else '' }}">
+      <input type="hidden" name="calid"
+        value="{{ atividade.calid if atividade else request.query_params.get('calid', '') }}">
+
+      <!-- Tabs -->
+      <div class="border-b border-gray-200 mb-4">
+        <nav class="flex space-x-4" aria-label="Tabs">
+          <button type="button" class="tab-btn text-sm font-medium px-3 py-2 text-[#8B1E3F] border-b-2 border-[#8B1E3F]"
+            data-tab="detalhes">Detalhes</button>
+          <button type="button" class="tab-btn text-sm font-medium px-3 py-2 text-gray-600 hover:text-[#8B1E3F]"
+            data-tab="participantes">Participantes</button>
+          <button type="button" class="tab-btn text-sm font-medium px-3 py-2 text-gray-600 hover:text-[#8B1E3F]"
+            data-tab="custos">Custos</button>
+          <button type="button" class="tab-btn text-sm font-medium px-3 py-2 text-gray-600 hover:text-[#8B1E3F]"
+            data-tab="receitas">Receitas</button>
+        </nav>
+      </div>
+
+      <!-- Inclusão dinâmica das abas -->
+      {% include 'tabs/tab_detalhes.html' %}
+      {% include 'tabs/tab_participantes.html' %}
+      {% include 'tabs/tab_custos.html' %}
+      {% include 'tabs/tab_receitas.html' %}
+
+      <!-- Ações -->
+      <div class="flex justify-between mt-4">
+        <div class="space-x-2">
+          {% if atividade %}
+          <button id="btn-excluir" type="button"
+            class="text-red-600 border border-red-600 px-4 py-1.5 rounded-md hover:bg-red-50 transition flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Excluir
+          </button>
+          {% endif %}
+        </div>
+        <div class="space-x-2">
+          <button type="submit"
+            class="bg-[#8B1E3F] text-white px-4 py-2 rounded-md hover:bg-[#731A35] transition flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Salvar
+          </button>
+          <button type="button" onclick="document.getElementById('modal-atividade').close()"
+            class="text-gray-600 hover:underline">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</dialog>

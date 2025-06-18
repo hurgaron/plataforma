@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import extract, func, case
 
 from app.database import SessionLocal
-from app.auth import obter_usuario_logado
+from app.auth import obter_usuario_logado, get_db
 from app.models.jovem import Jovem
 from app.models.adulto import Adulto
 from app.models.mensalidade import Mensalidade
@@ -21,12 +21,6 @@ from app.models.atividade import Atividade
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):

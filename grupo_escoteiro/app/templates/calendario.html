@@ -1,214 +1,162 @@
 {% extends "layout.html" %}
-{% block title %}Calendário de Atividades{% endblock %}
-
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800">📅 Calendário de Atividades</h2>
-    <a href="/calendario/imprimir?mes={{ hoje.month }}&ano={{ hoje.year }}"
-      class="inline-flex items-center px-4 py-2 mt-4 sm:mt-0 bg-white border border-gray-300 text-sm font-medium text-gray-700 rounded hover:bg-gray-100 shadow-sm">
-      🖨️ Imprimir Agenda
-    </a>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+  <div class="flex justify-between items-center flex-wrap gap-3">
+    <h2 class="text-2xl font-bold text-gray-800">📅 Calendário de Atividades</h2>
+
+    <div class="relative" x-data="{ aberto: false }">
+      <button @click="aberto = !aberto"
+        class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md border border-[#8B1E3F] text-[#8B1E3F] hover:bg-[#8B1E3F] hover:text-white shadow-sm">
+        ⚙️ Ações
+        <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <div x-show="aberto" @click.away="aberto = false"
+        class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+        <a href="/calendario/imprimir?mes={{ hoje.month }}&ano={{ hoje.year }}"
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          🖨️ Imprimir Agenda (HTML)
+        </a>
+        <a href="/calendario/imprimir/pdf?mes={{ hoje.month }}&ano={{ hoje.year }}"
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          📄 Exportar Agenda em PDF
+        </a>
+      </div>
+    </div>
   </div>
 
-  <div class="mb-6 flex flex-wrap gap-4">
-    {% for cal in calendarios %}
-    <label class="inline-flex items-center text-sm space-x-2 bg-gray-100 px-3 py-1 rounded shadow-sm">
-      <input type="checkbox" class="filtro-calendario" value="{{ cal.calid }}" checked>
-      <span class="flex items-center">
-        <span class="inline-block w-3 h-3 rounded-full mr-2" style="background-color: {{ cal.cor }}"></span>
-        {{ cal.calnome }}
-      </span>
-    </label>
-    {% endfor %}
+  <div class="mt-4">
+    <input type="text" id="filtro-busca" placeholder="🔍 Buscar atividade..."
+      class="w-full md:max-w-xs rounded-md border border-gray-300 shadow-sm px-3 py-2 text-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]" />
   </div>
 
-  <div id="calendar" class="bg-white shadow rounded-xl p-4" style="min-height: 600px;"></div>
-</div>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
-<!-- Modal -->
-<div id="modalAtividade"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-  <div class="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
-    <h3 class="text-lg font-bold mb-4 text-gray-800">Nova Atividade</h3>
-    <form id="formAtividade" method="post" class="space-y-4">
-      <input type="hidden" id="atid" name="atid">
-      <input type="hidden" name="data_inicio" id="data_inicio">
-      <input type="hidden" name="data_fim" id="data_fim">
+    <!-- Filtros -->
+    <div class="bg-white shadow-sm border ring-1 ring-gray-200 rounded-xl p-4 space-y-4 max-h-[700px] overflow-y-auto">
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Título</label>
-        <input type="text" name="titulo"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          required>
+      <h4 class="text-sm font-semibold text-gray-700">🗂️ Filtros de Calendário</h4>
+
+      <!-- Filtros funcionais -->
+      {% for grupo in grupos_de_calendarios %}
+      <div class="space-y-1">
+        <h5 class="text-xs font-bold uppercase text-gray-500">{{ grupo.nome }}</h5>
+        {% for cal in grupo.itens %}
+        <label class="flex items-center space-x-2 text-sm">
+          <input type="checkbox" class="filtro-calendario" value="{{ cal.calid }}" checked>
+          <span class="w-3 h-3 rounded-full" style="background-color: {{ cal.cor }}"></span>
+          <span>{{ cal.nome }}</span>
+        </label>
+        {% endfor %}
       </div>
+      {% endfor %}
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Descrição</label>
-        <textarea name="descricao" rows="3"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
-      </div>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Local</label>
-        <input type="text" name="local"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-      </div>
+    <!-- Calendário -->
+    <div class="md:col-span-3">
+      <div id="calendar" class="bg-white shadow rounded-xl p-4 ring-1 ring-gray-200 min-h-[600px]"></div>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Calendário</label>
-        <select name="calid"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          required>
-          {% for cal in calendarios %}
-          <option value="{{ cal.calid }}" data-color="{{ cal.cor }}" style="color: {{ cal.cor }}">{{ cal.calnome }}
-          </option>
-          {% endfor %}
-        </select>
-        <div class="mt-2">
-          <span class="inline-block w-4 h-4 rounded-full border" id="corVisual"
-            style="background-color: #2563eb"></span>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick="fecharModal()"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded hover:bg-gray-100 text-gray-700">
-          Cancelar
-        </button>
-        <button type="submit"
-          class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          Salvar
-        </button>
-        <button type="button" id="btnExcluir" onclick="excluirAtividade()"
-          class="hidden inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700">
-          Excluir
-        </button>
-      </div>
-    </form>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<!-- Modal de Atividade -->
+<div id="modal-atividade-container" class="mt-6">
+  <!-- Conteúdo do modal carregado dinamicamente -->
+</div>
+
+<!-- FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+<!-- Scripts -->
+<script type="module" src="/static/js/modal_atividade.js"></script>
+<script type="module" src="/static/js/calendar.js"></script>
+
+<!-- Script extra para toggle e persistência -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      locale: 'pt-br',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,listWeek'
-      },
-      events: '/api/atividades',
-      editable: true,
+  const filtros = document.getElementById('filtros-calendario');
+  const botao = document.getElementById('toggle-filtros-btn');
 
-      dateClick: function (info) {
-        abrirModal(info.dateStr);
-      },
-
-      eventClick: function (info) {
-        const atid = info.event.id;
-        fetch(`/api/atividade/${atid}`)
-          .then(r => r.json())
-          .then(data => {
-            document.getElementById("formAtividade").reset();
-            document.getElementById("formAtividade").action = `/calendario/atividade/${atid}/editar`;
-            document.getElementById("data_inicio").value = data.data_inicio;
-            document.getElementById("data_fim").value = data.data_fim;
-            document.querySelector("input[name='titulo']").value = data.titulo;
-            document.querySelector("textarea[name='descricao']").value = data.descricao || '';
-            document.querySelector("input[name='local']").value = data.local || '';
-            document.querySelector("select[name='calid']").value = data.calid;
-            document.getElementById("btnExcluir").classList.remove("hidden");
-            document.getElementById("modalAtividade").classList.remove("hidden");
-            document.getElementById("atid").value = atid;
-          });
-      },
-
-      eventDrop: function (info) {
-        atualizarDatas(info.event);
-      },
-
-      eventResize: function (info) {
-        atualizarDatas(info.event);
-      }
-    });
-
-    calendar.render();
-
-    document.querySelectorAll(".filtro-calendario").forEach(cb => {
-      cb.addEventListener("change", () => {
-        const ativos = Array.from(document.querySelectorAll(".filtro-calendario"))
-          .filter(c => c.checked)
-          .map(c => c.value);
-
-        calendar.getEvents().forEach(event => {
-          if (ativos.includes(event.groupId)) {
-            event.setProp("display", "auto");
-          } else {
-            event.setProp("display", "none");
-          }
-        });
-      });
-    });
-
-    window.abrirModal = function (dataStr) {
-      document.getElementById("formAtividade").reset();
-      document.getElementById("formAtividade").action = "/calendario/atividade/nova";
-      document.getElementById("data_inicio").value = dataStr + "T09:00:00";
-      document.getElementById("data_fim").value = dataStr + "T10:00:00";
-      document.getElementById("modalAtividade").classList.remove("hidden");
-      document.getElementById("btnExcluir").classList.add("hidden");
-    };
-
-    window.fecharModal = function () {
-      document.getElementById("modalAtividade").classList.add("hidden");
-    };
-
-    window.excluirAtividade = function () {
-      const atid = document.getElementById("atid").value;
-      if (!atid) return;
-
-      if (confirm("Tem certeza que deseja excluir esta atividade?")) {
-        fetch(`/calendario/atividade/${atid}/excluir`, {
-          method: "POST"
-        }).then(() => {
-          fecharModal();
-          window.location.href = "/calendario";
-        });
-      }
-    };
-
-    function atualizarDatas(event) {
-      fetch(`/calendario/atividade/${event.id}/atualizar_data`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          data_inicio: event.start.toISOString(),
-          data_fim: event.end ? event.end.toISOString() : event.start.toISOString()
-        })
-      }).then(r => {
-        if (!r.ok) {
-          alert("Erro ao salvar a nova data.");
-        }
-      });
-    }
-  });
-
-  const select = document.querySelector("select[name='calid']");
-  const corPreview = document.getElementById("corVisual");
-
-  function atualizarCorPreview() {
-    const selected = select.options[select.selectedIndex];
-    corPreview.style.backgroundColor = selected.getAttribute("data-color");
+  // Restaurar estado anterior
+  const filtrosVisiveis = localStorage.getItem('filtrosCalendario') === 'true';
+  if (filtrosVisiveis) {
+    filtros.classList.remove('hidden');
+    botao.textContent = "🧭 Ocultar Filtros";
   }
 
-  select.addEventListener("change", atualizarCorPreview);
-  document.addEventListener("DOMContentLoaded", atualizarCorPreview);
+  botao.addEventListener('click', () => {
+    filtros.classList.toggle('hidden');
+    const estaVisivel = !filtros.classList.contains('hidden');
+    botao.textContent = estaVisivel ? "🧭 Ocultar Filtros" : "🧭 Mostrar Filtros";
+    localStorage.setItem('filtrosCalendario', estaVisivel);
+  });
 </script>
+
+<style>
+  #calendar {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .fc .fc-button {
+    background-color: #8B1E3F;
+    border: none;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 0.375rem;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .fc .fc-button:hover {
+    background-color: #6c192f;
+  }
+
+  .fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #6c192f;
+  }
+
+  .fc .fc-day-today {
+    background-color: #fdf2f7 !important;
+    border: 1px solid #fbcfe8;
+  }
+
+  .fc .fc-daygrid-event {
+    background-color: #8B1E3F;
+    border: none;
+    padding: 2px 4px;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+  }
+
+  .fc .fc-daygrid-event:hover {
+    background-color: #6c192f;
+  }
+
+  .fc .fc-col-header-cell-cushion {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .fc .fc-daygrid-day-number {
+    font-weight: 500;
+    color: #1f2937;
+  }
+
+  .fc .fc-scrollgrid {
+    border-color: #e5e7eb;
+  }
+</style>
 
 {% endblock %}

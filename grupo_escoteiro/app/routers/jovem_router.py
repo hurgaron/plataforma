@@ -1,106 +1,82 @@
-from fastapi import APIRouter, Request, Depends, Form, HTTPException, Path
-from fastapi.responses import HTMLResponse
+
+from fastapi import APIRouter, Request, Form, Depends
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from typing import List
-from datetime import date
-from app.database import SessionLocal
-from app.auth import obter_usuario_logado
-from app.models.jovem import Jovem
-from pydantic import BaseModel
-from fastapi.responses import RedirectResponse
-from starlette.status import HTTP_302_FOUND
+from app.auth import get_db, obter_usuario_logado
+from app.models import Jovem
 
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# 📄 Pydantic para API
-class JovemOut(BaseModel):
-    jovcod: int
-    jovnome: str
-    jovdata_nasc: date
-
-    class Config:
-        orm_mode = True
-
-class JovemCreate(BaseModel):
-    jovnome: str
-    jovdata_nasc: date
-
-# 🖥️ Visual HTML
 @router.get("/jovens", response_class=HTMLResponse)
-def listar_jovens_html(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    jovens = db.query(Jovem).filter(Jovem.empid == usuario.empid).order_by(Jovem.jovnome).all()
+def listar_jovens(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
+    jovens = db.query(Jovem).filter(Jovem.empid == usuario.empid).all()
     return templates.TemplateResponse("jovens.html", {"request": request, "jovens": jovens, "usuario": usuario})
 
-# 📦 API - GET
-@router.get("/api/jovens", response_model=List[JovemOut])
-def listar_jovens_api(db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    return db.query(Jovem).filter(Jovem.empid == usuario.empid).order_by(Jovem.jovnome).all()
-
-# 📦 API - POST
-@router.post("/api/jovens", response_model=JovemOut)
-def criar_jovem_api(dados: JovemCreate, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    novo = Jovem(**dados.dict(), empid=usuario.empid)
-    db.add(novo)
-    db.commit()
-    db.refresh(novo)
-    return novo
-
-# 📄 Formulário visual para cadastro
 @router.get("/jovens/novo", response_class=HTMLResponse)
-def novo_jovem_form(request: Request, usuario=Depends(obter_usuario_logado)):
+def novo_jovem(request: Request, usuario=Depends(obter_usuario_logado)):
     return templates.TemplateResponse("jovens_novo.html", {"request": request, "usuario": usuario})
 
-# 💾 Submissão do formulário
 @router.post("/jovens/novo")
-def salvar_jovem_form(
+def criar_jovem(
     jovnome: str = Form(...),
-    jovdata_nasc: date = Form(...),
+    jovdata_nasc: str = Form(...),
+    jovtelefone: str = Form(None),
+    jovemail: str = Form(None),
+    jovemendereco: str = Form(None),
+    jovregistro: str = Form(None),
+    resp_nome: str = Form(None),
+    resp_telefone: str = Form(None),
+    resp_email: str = Form(None),
     db: Session = Depends(get_db),
     usuario=Depends(obter_usuario_logado)
 ):
-    novo = Jovem(jovnome=jovnome, jovdata_nasc=jovdata_nasc, empid=usuario.empid)
-    db.add(novo)
+    jovem = Jovem(
+        jovnome=jovnome,
+        jovdata_nasc=jovdata_nasc,
+        jovtelefone=jovtelefone,
+        jovemail=jovemail,
+        jovendereco=jovemendereco,
+        jovregistro=jovregistro,
+        resp_nome=resp_nome,
+        resp_telefone=resp_telefone,
+        resp_email=resp_email,
+        empid=usuario.empid
+    )
+    db.add(jovem)
     db.commit()
-    return RedirectResponse(url="/jovens", status_code=HTTP_302_FOUND)
+    return RedirectResponse("/jovens", status_code=303)
 
 @router.get("/jovens/{jovcod}/editar", response_class=HTMLResponse)
-def editar_jovem_form(jovcod: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    jovem = db.query(Jovem).filter(Jovem.jovcod == jovcod, Jovem.empid == usuario.empid).first()
-    if not jovem:
-        raise HTTPException(status_code=404, detail="Jovem não encontrado")
+def editar_jovem(jovcod: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
+    jovem = db.query(Jovem).filter(Jovem.jovcod == jovcod).first()
     return templates.TemplateResponse("jovens_editar.html", {"request": request, "jovem": jovem, "usuario": usuario})
 
 @router.post("/jovens/{jovcod}/editar")
-def salvar_edicao_jovem(
+def atualizar_jovem(
     jovcod: int,
     jovnome: str = Form(...),
-    jovdata_nasc: date = Form(...),
-    db: Session = Depends(get_db),
-    usuario=Depends(obter_usuario_logado)
+    jovdata_nasc: str = Form(...),
+    jovtelefone: str = Form(None),
+    jovemail: str = Form(None),
+    jovemendereco: str = Form(None),
+    jovregistro: str = Form(None),
+    resp_nome: str = Form(None),
+    resp_telefone: str = Form(None),
+    resp_email: str = Form(None),
+    db: Session = Depends(get_db)
 ):
-    jovem = db.query(Jovem).filter(Jovem.jovcod == jovcod, Jovem.empid == usuario.empid).first()
-    if not jovem:
-        raise HTTPException(status_code=404, detail="Jovem não encontrado")
+    jovem = db.query(Jovem).filter(Jovem.jovcod == jovcod).first()
     jovem.jovnome = jovnome
     jovem.jovdata_nasc = jovdata_nasc
+    jovem.jovtelefone = jovtelefone
+    jovem.jovemail = jovemail
+    jovem.jovendereco = jovemendereco
+    jovem.jovregistro = jovregistro
+    jovem.resp_nome = resp_nome
+    jovem.resp_telefone = resp_telefone
+    jovem.resp_email = resp_email
     db.commit()
-    return RedirectResponse(url="/jovens", status_code=HTTP_302_FOUND)
-
-@router.post("/jovens/{jovcod}/excluir")
-def excluir_jovem(jovcod: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    jovem = db.query(Jovem).filter(Jovem.jovcod == jovcod, Jovem.empid == usuario.empid).first()
-    if not jovem:
-        raise HTTPException(status_code=404, detail="Jovem não encontrado")
-    db.delete(jovem)
-    db.commit()
-    return RedirectResponse(url="/jovens", status_code=HTTP_302_FOUND)
+    return RedirectResponse("/jovens", status_code=303)

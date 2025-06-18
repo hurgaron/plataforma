@@ -1,0 +1,17 @@
+{% for r in receitas %}
+<div class="flex justify-between items-center border p-2 rounded-lg bg-gray-50">
+  <div>
+    <strong>{{ r.descricao }}</strong> — {{ "%.2f"|format(r.quantidade) }} x R$ {{ "%.2f"|format(r.valor_unitario) }}
+    ({{ "Realizado" if r.tipo_lancamento.value == "realizado" else "Previsto" }}{% if r.tipo %} - {{ r.tipo }}{% endif
+    %})
+  </div>
+  <div class="space-x-2">
+    <button type="button" onclick="event.stopPropagation(); editarReceita({{ r.id }})"
+      class="text-blue-600 hover:underline">Editar</button>
+
+    <button onclick="removerReceita({{ r.id }})" class="text-red-600 hover:underline text-sm">🗑 Remover</button>
+  </div>
+</div>
+{% else %}
+<p class="text-sm text-gray-500">Nenhuma receita registrada.</p>
+{% endfor %}

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 print:p-0 print:shadow-none">
+
+  <h1 class="text-2xl font-bold text-center mb-6 print:mb-2">
+    🗓️ Agenda de Atividades – {{ mes }}/{{ ano }}
+  </h1>
+
+  {% if atividades %}
+  <ul class="space-y-4 print:space-y-2">
+    {% for a in atividades %}
+    <li class="border-b pb-2 print:pb-1 print:text-sm">
+      <p class="font-semibold text-[#8B1E3F]">
+        {{ a.data_inicio.strftime('%d/%m/%Y %H:%M') }} – {{ a.titulo }}
+      </p>
+      <p class="text-gray-700">{{ a.local or "Local não definido" }}</p>
+      <p class="text-gray-500">{{ a.descricao or "" }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-center text-gray-500">Nenhuma atividade encontrada para o mês.</p>
+  {% endif %}
+
+</div>
+
+<script>
+  window.print();
+</script>
+
+{% endblock %}

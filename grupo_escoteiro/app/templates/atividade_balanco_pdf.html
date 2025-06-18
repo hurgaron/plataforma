@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Balanço da Atividade</title>
+  <style>
+    body { font-family: sans-serif; font-size: 12px; color: #333; }
+    h1, h2 { color: #8B1E3F; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    th { background: #f5f5f5; }
+    .section { margin-bottom: 30px; }
+    .totais { font-weight: bold; }
+    .saldo { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Balanço da Atividade</h1>
+  <p><strong>Título:</strong> {{ atividade.titulo }}</p>
+  <p><strong>Período:</strong> {{ atividade.data_inicio.strftime('%d/%m/%Y') }} a {{ atividade.data_fim.strftime('%d/%m/%Y') }}</p>
+
+  <div class="section">
+    <h2>💸 Custos</h2>
+    <table>
+      <thead>
+        <tr><th>Descrição</th><th>Tipo</th><th>Qtd</th><th>Valor Unit.</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        {% for c in custos %}
+        <tr>
+          <td>{{ c.descricao }}</td>
+          <td>{{ c.tipo }}</td>
+          <td>{{ "%.2f"|format(c.quantidade) }}</td>
+          <td>R$ {{ "%.2f"|format(c.valor_unitario) }}</td>
+          <td>R$ {{ "%.2f"|format(c.quantidade * c.valor_unitario) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Nenhum custo informado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>💰 Receitas</h2>
+    <table>
+      <thead>
+        <tr><th>Descrição</th><th>Tipo</th><th>Qtd</th><th>Valor Unit.</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        {% for r in receitas %}
+        <tr>
+          <td>{{ r.descricao }}</td>
+          <td>{{ r.tipo }}</td>
+          <td>{{ "%.2f"|format(r.quantidade) }}</td>
+          <td>R$ {{ "%.2f"|format(r.valor_unitario) }}</td>
+          <td>R$ {{ "%.2f"|format(r.quantidade * r.valor_unitario) }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Nenhuma receita informada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>📈 Totais</h2>
+    <p class="totais">Total de Custos: R$ {{ "%.2f"|format(total_custos) }}</p>
+    <p class="totais">Total de Receitas: R$ {{ "%.2f"|format(total_receitas) }}</p>
+    <p class="saldo">💼 Saldo Final: <strong style="color: {{ 'green' if saldo >= 0 else 'red' }};">
+      R$ {{ "%.2f"|format(saldo) }}
+    </strong></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-center mb-6">🖨️ Agenda de Atividades – {{ mes }}/{{ ano }}</h1>
+
+    {% if eventos_por_dia %}
+    {% for data, eventos in eventos_por_dia.items() %}
+    <div class="mb-8 break-inside-avoid">
+        <h2 class="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-1 mb-2">
+            📅 {{ data.strftime('%A, %d de %B de %Y') | capitalize }}
+        </h2>
+        <ul class="space-y-2">
+            {% for ev in eventos %}
+            <li class="text-sm">
+                <div class="flex items-start gap-2">
+                    <div class="mt-1 w-2 h-2 rounded-full" style="background-color: {{ ev.cor }}"></div>
+                    <div>
+                        <div class="font-medium text-gray-900">{{ ev.titulo }}</div>
+                        <div class="text-gray-600">
+                            {{ ev.horario }}{% if ev.local %} • 📍 {{ ev.local }}{% endif %}
+                            • <span class="text-xs" style="color: {{ ev.cor }}">{{ ev.calendario }}</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="text-center text-gray-500">Nenhuma atividade encontrada para o período selecionado.</p>
+    {% endif %}
+</div>
+
+<style>
+    @media print {
+        * {
+            color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            background: white;
+            color: black;
+            font-size: 12pt;
+        }
+
+        h1,
+        h2 {
+            color: black;
+            page-break-after: avoid;
+        }
+
+        .break-inside-avoid {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+{% endblock %}

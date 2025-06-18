@@ -113,7 +113,7 @@ def baixar_excel(
     mes: int = 0,
     ano: int = 0,
     db: Session = Depends(get_db),
-    usuario=Depends(obter_usuario_logado)
+    usuario=Depends()
 ):
     from sqlalchemy import extract
 

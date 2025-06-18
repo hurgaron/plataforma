@@ -101,7 +101,7 @@ def editar_empresa_form(request: Request, db: Session = Depends(get_db), usuario
     empresa = db.query(Empresa).filter(Empresa.empcod == usuario.empid).first()
     if not empresa:
         raise HTTPException(status_code=404, detail="Empresa não encontrada")
-    return templates.TemplateResponse("empresa/form.html", {"request": request, "empresa": empresa})
+    return templates.TemplateResponse("empresa/form.html", {"request": request, "empresa": empresa, "usuario": usuario})
 
 @router.post("/editar")
 def editar_empresa(

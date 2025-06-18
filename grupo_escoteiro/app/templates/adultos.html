@@ -1,50 +1,43 @@
 {% extends "layout.html" %}
-
 {% block title %}Adultos{% endblock %}
-
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800">Adultos Cadastrados</h2>
-        <a href="/adultos/novo"
-            class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-            + Novo Adulto
-        </a>
-    </div>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-semibold text-gray-800">Adultos Cadastrados</h2>
+    <a href="/adultos/novo" class="bg-[#8B1E3F] text-white px-4 py-2 rounded hover:bg-[#6e182f] text-sm shadow">
+      ➕ Novo Adulto
+    </a>
+  </div>
 
-    <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-md">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Data de Nascimento</th>
-                    <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                {% for adulto in adultos %}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 text-sm text-gray-800">{{ adulto.adunome }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800">{{ adulto.adudata_nasc.strftime('%d/%m/%Y') }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-800">
-                        <a href="/adultos/{{ adulto.aducod }}/editar"
-                            class="text-blue-600 hover:text-blue-800 hover:underline mr-4">Editar</a>
-                        <form method="post" action="/adultos/{{ adulto.aducod }}/excluir" class="inline">
-                            <button type="submit"
-                                onclick="return confirm('Tem certeza que deseja excluir?')"
-                                class="text-red-600 hover:text-red-800 hover:underline">
-                                Excluir
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="px-6 py-6 text-center text-sm text-gray-500">Nenhum adulto cadastrado.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <div class="overflow-x-auto bg-white rounded-lg shadow ring-1 ring-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 font-semibold text-gray-600">Nome</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Nascimento</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Registro</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Telefone</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">E-mail</th>
+          <th class="px-4 py-3 font-semibold text-gray-600">Endereço</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for adulto in adultos %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2">{{ adulto.adunome }}</td>
+          <td class="px-4 py-2">{{ adulto.adudata_nasc.strftime('%d/%m/%Y') }}</td>
+          <td class="px-4 py-2">{{ adulto.aduregistro }}</td>
+          <td class="px-4 py-2">{{ adulto.adutelefone }}</td>
+          <td class="px-4 py-2">{{ adulto.aduemail }}</td>
+          <td class="px-4 py-2">{{ adulto.aduendereco }}</td>
+          <td class="px-4 py-2 text-right">
+            <a href="/adultos/{{ adulto.aducod }}/editar" class="text-blue-600 hover:underline">Editar</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

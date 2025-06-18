@@ -11,3 +11,7 @@ from .conta import Conta
 from .mensalidade import Mensalidade
 from .calendario import Calendario
 from .certificadoNumeracao import CertificadoNumeracao
+from .atividade import Atividade
+from .atividade_participante import AtividadeParticipante
+from .atividade_custo import AtividadeCusto
+from .atividade_receita import AtividadeReceita

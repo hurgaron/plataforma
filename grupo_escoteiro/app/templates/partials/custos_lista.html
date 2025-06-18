@@ -1,0 +1,15 @@
+{% for c in custos %}
+<div class="flex justify-between items-center border p-2 rounded-lg bg-gray-50">
+  <div>
+    <strong>{{ c.descricao }}</strong> — {{ "%.2f"|format(c.quantidade) }} x R$ {{ "%.2f"|format(c.valor_unitario) }}
+    ({{ "Realizado" if c.tipo_lancamento.value == "realizado" else "Previsto" }}{% if c.tipo %} - {{ c.tipo }}{% endif
+    %})
+  </div>
+  <div class="space-x-2">
+    <button type="button" onclick="editarCusto({{ c.id }})" class="text-blue-600 hover:underline">Editar</button>
+    <button onclick="removerCusto({{ c.id }})" class="text-red-600 hover:underline text-sm">🗑 Remover</button>
+  </div>
+</div>
+{% else %}
+<p class="text-sm text-gray-500">Nenhum custo registrado ainda.</p>
+{% endfor %}

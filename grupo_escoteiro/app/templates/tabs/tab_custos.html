@@ -1,0 +1,65 @@
+<div id="tab-custos" class="tab-content hidden space-y-4">
+    <h3 class="text-sm font-semibold text-gray-700">💸 Adicionar Custo</h3>
+    <form id="form-custo" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <input type="hidden" name="id" />
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Descrição <span title="Nome do item ou serviço"
+                    class="text-gray-400 cursor-help">(?)</span></label>
+            <input type="text" name="descricao" required placeholder="Ex: Impressão de folhetos"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Quantidade <span title="Valor numérico"
+                    class="text-gray-400 cursor-help">(?)</span></label>
+            <input type="number" step="0.01" name="quantidade" required placeholder="Ex: 2"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Valor Unitário <span
+                    title="Use ponto como separador decimal" class="text-gray-400 cursor-help">(?)</span></label>
+            <input type="number" step="0.01" name="valor_unitario" required placeholder="Ex: 25.00"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Tipo <span title="Classificação do custo"
+                    class="text-gray-400 cursor-help">(?)</span></label>
+            <select name="tipo" required
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500">
+                <option value="">Selecione</option>
+                <option value="produto">Produto</option>
+                <option value="mao_obra">Mão de obra</option>
+                <option value="servico">Serviço</option>
+                <option value="outro">Outro</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Lançamento <span title="Previsto ou realizado"
+                    class="text-gray-400 cursor-help">(?)</span></label>
+            <select name="tipo_lancamento" required
+                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] invalid:border-red-500">
+                <option value="previsto">Previsto</option>
+                <option value="realizado">Realizado</option>
+            </select>
+        </div>
+
+        <div class="md:col-span-5">
+            <button type="submit"
+                class="bg-[#8B1E3F] text-white px-4 py-2 rounded-md w-full hover:bg-[#731A35] transition flex items-center gap-1 justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Adicionar
+            </button>
+        </div>
+    </form>
+
+    <div id="lista-custos" class="space-y-2">
+        <p class="text-sm text-gray-600">Carregando custos...</p>
+    </div>
+</div>

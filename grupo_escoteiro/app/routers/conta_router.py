@@ -7,17 +7,10 @@ from datetime import date
 from app.database import SessionLocal
 from app.models.conta import Conta
 from app.models.fornecedor import Fornecedor
-from app.auth import obter_usuario_logado
+from app.auth import get_db,obter_usuario_logado
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("/contas", response_class=HTMLResponse)
 def listar_contas(request: Request,
