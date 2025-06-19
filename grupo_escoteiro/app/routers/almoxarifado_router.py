@@ -5,18 +5,11 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
 
 from app.database import SessionLocal
-from app.auth import obter_usuario_logado
+from app.auth import obter_usuario_logado, get_db
 from app.models.material import Material
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("/almoxarifado", response_class=HTMLResponse)
 def listar_materiais(request: Request, busca: str = "", db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):

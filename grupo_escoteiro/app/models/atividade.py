@@ -7,7 +7,7 @@ class Atividade(Base):
     __tablename__ = "atividade"
 
     atid = Column(Integer, primary_key=True, index=True)
-    calid = Column(Integer, ForeignKey("calendario.calid"), nullable=False)
+    calid = Column(Integer, ForeignKey("calendario.calid"), nullable=True)
     titulo = Column(String(100), nullable=False)
     descricao = Column(Text)
     data_inicio = Column(DateTime, nullable=False)

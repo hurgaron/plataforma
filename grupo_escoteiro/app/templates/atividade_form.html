@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">📝 Nova Atividade</h2>
+
+    {% if atividade and atividade.ati_status == 'encerrada' %}
+    <div class="mb-4 p-3 rounded-md bg-green-100 text-green-800 text-sm">
+        ✅ Esta atividade está encerrada. Edições não são permitidas.
+    </div>
+    {% endif %}
+
+    <form id="form-atividade" method="post"
+        action="{% if atividade %}/atividade/{{ atividade.atid }}/salvar{% else %}/atividade/salvar{% endif %}"
+        class="space-y-6">
+        <input type="hidden" name="atid" value="{{ atividade.atid if atividade else '' }}">
+
+        <div x-data="{ aba: 'detalhes' }" class="space-y-6">
+            <div class="flex flex-wrap gap-2 border-b pb-2">
+                <button type="button" :class="aba === 'detalhes' ? 'font-semibold text-[#8B1E3F]' : 'text-gray-600'"
+                    @click="aba = 'detalhes'">📝 Detalhes</button>
+                <button type="button"
+                    :class="aba === 'participantes' ? 'font-semibold text-[#8B1E3F]' : 'text-gray-600'"
+                    @click="aba = 'participantes'">👥 Participantes</button>
+                <button type="button" :class="aba === 'custos' ? 'font-semibold text-[#8B1E3F]' : 'text-gray-600'"
+                    @click="aba = 'custos'">💸 Custos</button>
+                <button type="button" :class="aba === 'receitas' ? 'font-semibold text-[#8B1E3F]' : 'text-gray-600'"
+                    @click="aba = 'receitas'">💰 Receitas</button>
+            </div>
+
+            <div x-show="aba === 'detalhes'">
+                {% include 'tabs/tab_detalhes.html' %}
+            </div>
+            <div x-show="aba === 'participantes'">
+                {% include 'tabs/tab_participantes.html' %}
+            </div>
+            <div x-show="aba === 'custos'">
+                {% include 'tabs/tab_custos.html' %}
+            </div>
+            <div x-show="aba === 'receitas'">
+                {% include 'tabs/tab_receitas.html' %}
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 border-t mt-4">
+            <div>
+                {% if atividade and atividade.ati_status == 'encerrada' %}
+                <span class="text-green-700 text-sm font-medium flex items-center gap-1">
+                    ✅ Atividade encerrada
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="space-x-2">
+                {% if not atividade or atividade.ati_status != 'encerrada' %}
+                <button type="submit" onclick="console.log('Botão Salvar clicado')"
+                    class="bg-[#8B1E3F] text-white px-4 py-2 rounded-md hover:bg-[#731A35] transition flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Salvar
+                </button>
+                {% endif %}
+                <a href="/calendario" class="text-gray-600 hover:underline">Cancelar</a>
+            </div>
+        </div>
+    </form>
+
+    {% if atividade and atividade.ati_status != 'encerrada' %}
+    <form action="/atividade/{{ atividade.atid }}/encerrar" method="post" class="inline-block mt-4"
+        onsubmit="return confirm('Deseja realmente encerrar esta atividade? Isso lançará os valores no fluxo de caixa e impedirá futuras edições.')">
+        <button type="submit"
+            class="bg-green-600 text-white px-3 py-1.5 rounded-md hover:bg-green-700 transition text-sm flex items-center gap-1">
+            ✅ Encerrar
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% block scripts %}
+<script type="module" src="/static/js/atividade_form.js"></script>
+{% endblock %}
+
+{% endblock %}

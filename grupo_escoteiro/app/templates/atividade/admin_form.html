@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
+
+    <h2 class="text-2xl font-bold text-gray-800">
+        {% if atividade %}✏️ Editar{% else %}➕ Nova{% endif %} Atividade Administrativa
+    </h2>
+
+    <form
+        action="{% if atividade %}/atividade/admin/{{ atividade.atid }}/salvar{% else %}/atividade/admin/salvar{% endif %}"
+        method="post" class="space-y-6">
+        <input type="hidden" name="atid" value="{{ atividade.atid if atividade else '' }}">
+
+        <!-- Título -->
+        <div>
+            <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
+            <input type="text" id="titulo" name="titulo" required value="{{ atividade.titulo if atividade else '' }}"
+                class="input w-full" />
+        </div>
+
+        <!-- Descrição -->
+        <div>
+            <label for="descricao" class="block text-sm font-medium text-gray-700">Descrição</label>
+            <textarea id="descricao" name="descricao" rows="4"
+                class="input w-full">{{ atividade.descricao if atividade else '' }}</textarea>
+        </div>
+
+        <!-- Datas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="data_inicio" class="block text-sm font-medium text-gray-700">Data de Início</label>
+                <input type="date" id="data_inicio" name="data_inicio"
+                    value="{{ atividade.data_inicio.strftime('%Y-%m-%d') if atividade and atividade.data_inicio else '' }}"
+                    class="input w-full" />
+            </div>
+            <div>
+                <label for="data_fim" class="block text-sm font-medium text-gray-700">Data de Fim</label>
+                <input type="date" id="data_fim" name="data_fim"
+                    value="{{ atividade.data_fim.strftime('%Y-%m-%d') if atividade and atividade.data_fim else '' }}"
+                    class="input w-full" />
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="flex justify-between items-center pt-4">
+            <button type="submit" class="btn bg-[#8B1E3F] text-white px-4 py-2 rounded hover:bg-[#6e1933]">📂
+                Salvar</button>
+            {% if atividade %}
+            <form method="post" action="/atividade/admin/{{ atividade.atid }}/excluir"
+                onsubmit="return confirm('Deseja excluir esta atividade?')">
+                <button type="submit" class="btn bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">🗑️
+                    Excluir</button>
+            </form>
+            {% endif %}
+        </div>
+    </form>
+
+    {% if atividade %}
+    <hr class="my-6 border-t">
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2">👥 Participantes</h3>
+
+    {% if mensagem_sucesso %}
+    <div class="mb-4 p-3 rounded bg-green-100 text-green-800 text-sm">
+        ✅ {{ mensagem_sucesso }}
+    </div>
+    {% endif %}
+    {% if mensagem_erro %}
+    <div class="mb-4 p-3 rounded bg-red-100 text-red-800 text-sm">
+        ❌ {{ mensagem_erro }}
+    </div>
+    {% endif %}
+
+    <!-- Adicionar participante com tipo e datalist -->
+    <form action="/atividade/admin/{{ atividade.atid }}/participantes/adicionar" method="post"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end mb-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Tipo</label>
+            <select name="participante_tipo" id="participante_tipo" class="input w-full" onchange="trocarDatalist()">
+                <option value="jovem">Jovem</option>
+                <option value="adulto">Adulto</option>
+            </select>
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Participante</label>
+            <input name="participante_id" id="participante_input" class="input w-full" list="datalist-jovem" required
+                placeholder="Digite o nome..." value="{{ ultimo_valor }}">
+            <datalist id="datalist-jovem">
+                {% for jovem in jovens %}
+                <option value="{{ jovem.jovcod }}">[J] {{ jovem.jovnome }}</option>
+                {% endfor %}
+            </datalist>
+            <datalist id="datalist-adulto">
+                {% for adulto in adultos %}
+                <option value="{{ adulto.aducod }}">[A] {{ adulto.adunome }}</option>
+                {% endfor %}
+            </datalist>
+        </div>
+
+        <button type="submit"
+            class="btn bg-[#8B1E3F] text-white px-4 py-2 rounded hover:bg-[#6e1933]">Adicionar</button>
+    </form>
+
+    <!-- Tabela de participantes -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-2 text-left font-medium text-gray-700">Nome</th>
+                    <th class="px-4 py-2 text-left font-medium text-gray-700">Tipo</th>
+                    <th class="px-4 py-2 text-left font-medium text-gray-700">Status</th>
+                    <th class="px-4 py-2 text-left font-medium text-gray-700">Valor Pago</th>
+                    <th class="px-4 py-2 text-left font-medium text-gray-700">Observação</th>
+                    <th class="px-4 py-2 text-left font-medium text-gray-700">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-100">
+                {% for p in participantes %}
+                <tr>
+                    <form method="post"
+                        action="/atividade/admin/{{ atividade.atid }}/participantes/{{ p.id }}/atualizar">
+                        <td class="px-4 py-2">{{ p.nome }}</td>
+                        <td class="px-4 py-2">{{ p.tipo|capitalize }}</td>
+                        <td class="px-4 py-2">
+                            <select name="status_pagamento" class="input">
+                                <option value="pendente" {% if p.status_pagamento=='pendente' %}selected{% endif %}>
+                                    Pendente</option>
+                                <option value="pago" {% if p.status_pagamento=='pago' %}selected{% endif %}>Pago
+                                </option>
+                                <option value="isento" {% if p.status_pagamento=='isento' %}selected{% endif %}>Isento
+                                </option>
+                            </select>
+                        </td>
+                        <td class="px-4 py-2">
+                            <input name="valor_pago" type="number" step="0.01" value="{{ p.valor_pago or '' }}"
+                                class="input w-24">
+                        </td>
+                        <td class="px-4 py-2">
+                            <input name="observacao" value="{{ p.observacao or '' }}" class="input w-full">
+                        </td>
+                        <td class="px-4 py-2 flex gap-2">
+                            <button class="text-green-600 hover:text-green-800" title="Salvar">📂</button>
+                    </form>
+                    <form method="post" action="/atividade/admin/{{ atividade.atid }}/participantes/{{ p.id }}/remover"
+                        onsubmit="return confirm('Remover este participante?')">
+                        <button type="submit" class="text-red-600 hover:text-red-800" title="Remover">🗑️</button>
+                    </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function trocarDatalist() {
+        const tipo = document.getElementById("participante_tipo").value;
+        const input = document.getElementById("participante_input");
+        console.log("Tipo selecionado:", tipo);
+        if (tipo === "jovem") {
+            input.setAttribute("list", "datalist-jovem");
+        } else {
+            input.setAttribute("list", "datalist-adulto");
+        }
+        input.value = "";
+    }
+    document.addEventListener("DOMContentLoaded", trocarDatalist);
+</script>
+{% endblock %}

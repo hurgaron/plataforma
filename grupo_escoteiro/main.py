@@ -22,11 +22,15 @@ from app.routers import movimentacao_router
 from app.routers import calendario_router
 from app.routers import certificados_router
 from app.routers import certificado_numeracao_router
+from app.routers import atividade_admin_router
+from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+app.add_middleware(SessionMiddleware, secret_key="sua_chave_secreta_segura")
 
 # Incluindo routers
 app.include_router(empresa_router.router)
@@ -48,7 +52,7 @@ app.include_router(movimentacao_router.router)
 app.include_router(calendario_router.router)
 app.include_router(certificados_router.router)
 app.include_router(certificado_numeracao_router.router)
-
+app.include_router(atividade_admin_router.router)
 
 @app.get("/", include_in_schema=False)
 def root():

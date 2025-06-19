@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, Numeric, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -12,5 +12,19 @@ class AtividadeParticipante(Base):
     presenca = Column(Boolean, default=True)
     observacao = Column(String(255))
     empid = Column(Integer, ForeignKey("empresa.empcod"), nullable=False)
+    valor_pago = Column(Numeric(10, 2), default=0)
+    status_pagamento = Column(String, default="pendente")
 
     atividade = relationship("Atividade", back_populates="participantes")
+
+    jovem = relationship(
+        "Jovem",
+        primaryjoin="and_(AtividadeParticipante.tipo == 'jovem', foreign(AtividadeParticipante.pessoa_id) == Jovem.jovcod)",
+        viewonly=True
+    )
+
+    adulto = relationship(
+        "Adulto",
+        primaryjoin="and_(AtividadeParticipante.tipo == 'adulto', foreign(AtividadeParticipante.pessoa_id) == Adulto.aducod)",
+        viewonly=True
+    )
