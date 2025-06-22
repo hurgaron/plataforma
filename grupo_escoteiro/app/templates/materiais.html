@@ -1,52 +1,58 @@
-<!-- materiais.html -->
 {% extends "layout.html" %}
 {% block title %}Materiais do Almoxarifado{% endblock %}
+
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">📦 Materiais do Almoxarifado</h2>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-  <a href="/almoxarifado/novo"
-     class="inline-flex items-center mb-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700">
-    ➕ Novo Material
-  </a>
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-[#8B1E3F] flex items-center gap-2">
+      📦 Materiais do Almoxarifado
+    </h2>
+    <a href="/almoxarifado/novo"
+       class="inline-flex items-center gap-2 px-4 py-2 bg-[#8B1E3F] text-white text-sm font-semibold rounded-lg hover:bg-[#6f182f]">
+      ➕ Novo Material
+    </a>
+  </div>
 
-  <form method="get" class="mb-6 flex gap-4">
-    <input type="text" name="busca" value="{{ busca }}" placeholder="Buscar por nome ou código de barras"
-           class="w-1/2 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+  <form method="get" class="flex flex-wrap gap-4 items-end">
+    <input type="text" name="busca" value="{{ busca }}" placeholder="🔍 Buscar por nome ou código"
+           class="w-full sm:w-1/2 rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm px-3 py-2">
     <button type="submit"
-            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700">
-      🔍 Buscar
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[#8B1E3F] text-white text-sm font-semibold rounded-lg hover:bg-[#6f182f]">
+      🔎 Buscar
     </button>
   </form>
 
-  <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-md">
+  <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-xl">
     <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-100">
+      <thead class="bg-gray-100 text-sm text-gray-700 font-semibold">
         <tr>
-          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Foto</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Material</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Quantidade</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Código de Barras</th>
-          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
+          <th class="px-4 py-3 text-left">Foto</th>
+          <th class="px-4 py-3 text-left">Material</th>
+          <th class="px-4 py-3 text-left">Quantidade</th>
+          <th class="px-4 py-3 text-left">Código de Barras</th>
+          <th class="px-4 py-3 text-left">Ações</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-100">
+      <tbody class="divide-y divide-gray-100 text-sm">
         {% for material in materiais %}
         <tr class="hover:bg-gray-50">
           <td class="px-4 py-3">
             {% if material.matfoto_url %}
-            <img src="{{ material.matfoto_url }}" alt="Foto" class="w-16 h-16 object-cover rounded">
-            {% else %}-{% endif %}
+            <img src="{{ material.matfoto_url }}" alt="Foto" class="w-16 h-16 object-cover rounded shadow">
+            {% else %}
+            <span class="text-gray-400">–</span>
+            {% endif %}
           </td>
-          <td class="px-4 py-3 text-sm text-gray-800">{{ material.matnome }}</td>
-          <td class="px-4 py-3 text-sm text-gray-800">{{ material.matquantidade }}</td>
-          <td class="px-4 py-3 text-sm text-gray-800">{{ material.matcod_barras or '-' }}</td>
-          <td class="px-4 py-3 text-sm text-gray-800">
+          <td class="px-4 py-3 text-gray-800">{{ material.matnome }}</td>
+          <td class="px-4 py-3 text-gray-800">{{ material.matquantidade }}</td>
+          <td class="px-4 py-3 text-gray-800">{{ material.matcod_barras or '-' }}</td>
+          <td class="px-4 py-3 flex gap-2">
             <a href="/almoxarifado/{{ material.matcod }}/editar"
-               class="text-blue-600 hover:text-blue-800 hover:underline mr-3">Editar</a>
+               class="text-blue-600 hover:text-blue-800 hover:underline text-xs">✏️ Editar</a>
             <form method="post" action="/almoxarifado/{{ material.matcod }}/excluir" class="inline">
               <button type="submit" onclick="return confirm('Deseja excluir este material?')"
-                      class="text-red-600 hover:text-red-800 hover:underline">Excluir</button>
+                      class="text-red-600 hover:text-red-800 hover:underline text-xs">🗑 Excluir</button>
             </form>
           </td>
         </tr>

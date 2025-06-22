@@ -1,243 +1,38 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Finanças em Movimento{% endblock %}</title>
 
-  <!-- FullCalendar CSS -->
+  {% if pagina_atual == 'calendario' %}
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js" defer></script>
+  {% endif %}
 
-  <!-- FullCalendar JS (modo tradicional) -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="bg-gray-100 text-gray-800">
-
   <div class="flex h-screen overflow-hidden">
-
     <!-- SIDEBAR -->
     <aside id="sidebar" class="bg-white w-64 border-r border-gray-200 flex-shrink-0 hidden md:block">
       <div class="p-6 border-b flex items-center justify-between">
         <span class="text-xl font-bold text-[#8B1E3F]">Finanças</span>
       </div>
-      <nav class="overflow-y-auto max-h-[calc(100vh-96px)] px-4 py-6 text-sm space-y-4">
-
-
-        {% if usuario.usufuncao == 'admin' %}
-        <div>
-          <h3 class="text-xs text-gray-500 uppercase tracking-wide mb-1">Administração</h3>
-
-          <a href="/dashboard"
-            class="menu-item {% if pagina_atual == 'dashboard' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
-            </svg>
-            Dashboard
-          </a>
-
-          <a href="/usuario/usuarios"
-            class="menu-item {% if pagina_atual == 'usuarios' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m3-6a4 4 0 100-8 4 4 0 000 8z" />
-            </svg>
-            Usuários
-          </a>
-
-          <a href="/empresa/editar"
-            class="menu-item {% if pagina_atual == 'empresa' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M3 21V7a1 1 0 011-1h16a1 1 0 011 1v14M3 10h18" />
-            </svg>
-            Empresa
-          </a>
-        </div>
-        {% endif %}
-
-        {% if usuario.usufuncao in ['admin', 'financeiro'] %}
-        <div>
-          <h3 class="text-xs text-gray-500 uppercase tracking-wide mb-1">Financeiro</h3>
-
-          <a href="/mensalidades"
-            class="menu-item {% if pagina_atual == 'mensalidades' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M3 5h18M3 10h18M3 15h18M3 20h18" />
-            </svg>
-            <span class="truncate">Mensalidades</span>
-            {% if qtd_titulos_aberto %}
-            <span class="ml-auto bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
-              {{ qtd_titulos_aberto }}
-            </span>
-            {% endif %}
-          </a>
-
-          <a href="/relatorios/mensalidades"
-            class="menu-item {% if pagina_atual == 'relatorios' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M3 3v18h18M9 17v-2a4 4 0 014-4h4" />
-            </svg>
-            Relatórios
-          </a>
-
-          <a href="/contas"
-            class="menu-item {% if pagina_atual == 'contas' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M4 4h16v16H4z" />
-            </svg>
-            Contas
-          </a>
-
-          <a href="/fluxo-caixa"
-            class="menu-item {% if pagina_atual == 'fluxo' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M3 6h18M3 12h18M3 18h18" />
-            </svg>
-            Fluxo de Caixa
-          </a>
-        </div>
-        {% endif %}
-
-        {% if usuario.usufuncao in ['admin', 'colaborador'] %}
-        <div>
-          <h3 class="text-xs text-gray-500 uppercase tracking-wide mb-1">RH</h3>
-
-          <a href="/jovens"
-            class="menu-item {% if pagina_atual == 'jovens' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m3-6a4 4 0 100-8 4 4 0 000 8z" />
-            </svg>
-            Jovens
-          </a>
-
-          <a href="/adultos"
-            class="menu-item {% if pagina_atual == 'adultos' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path
-                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-            Adultos
-          </a>
-
-          <a href="/fornecedores"
-            class="menu-item {% if pagina_atual == 'fornecedores' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M9 12l2 2 4-4" />
-            </svg>
-            Fornecedores
-          </a>
-        </div>
-
-
-        <div>
-          <h3 class="text-xs text-gray-500 uppercase tracking-wide mb-1">Almoxarifado</h3>
-
-          <a href="/almoxarifado"
-            class="menu-item {% if pagina_atual == 'materiais' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M21 16V8a2 2 0 00-2-2h-4l-2-2h-2l-2 2H5a2 2 0 00-2 2v8a2 2 0 002 2h14a2 2 0 002-2z" />
-            </svg>
-            Materiais
-          </a>
-
-          <a href="/almoxarifado/movimentacoes"
-            class="menu-item {% if pagina_atual == 'movimentacoes' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M4 4v16h16" />
-            </svg>
-            Movimentações
-          </a>
-        </div>
-
-
-        <div>
-          <h3 class="text-xs text-gray-500 uppercase tracking-wide mb-1">Certificados</h3>
-
-          <a href="/certificados"
-            class="menu-item {% if pagina_atual == 'certificados' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M17 9l-5 3-5-3V5a2 2 0 012-2h6a2 2 0 012 2z" />
-              <path d="M12 22v-6m0 0l-3 3m3-3l3 3" />
-            </svg>
-            <span class="truncate">Certificados</span>
-            {% if qtd_cert_pend %}
-            <span class="ml-auto bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
-              {{ qtd_cert_pend }}
-            </span>
-            {% endif %}
-          </a>
-
-          <a href="/numeracoes"
-            class="menu-item {% if pagina_atual == 'numeracoes' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M4 6h16M4 10h16M4 14h16" />
-            </svg>
-            Numerações
-          </a>
-        </div>
-
-        {% endif %}
-
-        <!-- Calendário -->
-        <div>
-          <h3 class="text-xs text-gray-500 uppercase tracking-wide mb-1">Calendário</h3>
-
-          <a href="/calendario"
-            class="menu-item {% if pagina_atual == 'calendario' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M8 7V3m8 4V3M3 11h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
-            </svg>
-            Atividades no Calendário
-          </a>
-
-          <a href="/atividade/admin" class="flex items-center space-x-2 hover:bg-gray-100 px-3 py-2 rounded-md">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"></path>
-            </svg>
-            <span>Atividades Internas</span>
-          </a>
-
-          <a href="/calendario/gerenciar"
-            class="menu-item {% if pagina_atual == 'gerenciar_calendario' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8B1E3F]" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M12 8v4l3 3" />
-            </svg>
-            Gerenciar Calendários
-          </a>
-        </div>
-
-
-        <div class="p-4 border-t">
-          <a href="/logout" class="flex items-center gap-2 text-red-600 hover:underline text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
-            </svg>
-            Sair
-          </a>
-        </div>
+      <nav class="overflow-y-auto h-full max-h-[calc(100vh-96px)] px-4 py-6 text-sm space-y-4">
+        {% include 'menu_lateral_completo.html' %}
+      </nav>
+      <div class="p-4 border-t">
+        <a href="/logout" class="flex items-center gap-2 text-red-600 hover:underline text-sm" role="button" aria-label="Sair do sistema">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+          </svg>
+          Sair
+        </a>
+      </div>
     </aside>
 
     <!-- OVERLAY MOBILE -->
@@ -247,12 +42,12 @@
     <div class="flex-1 flex flex-col overflow-hidden">
       <header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
-          <button class="md:hidden text-[#8B1E3F]" onclick="toggleSidebar()">☰</button>
-          <h2 class="text-lg font-semibold text-[#8B1E3F]">Finanças em Movimento</h2>
+          <button class="md:hidden text-[#8B1E3F]" onclick="toggleSidebar()" aria-label="Abrir menu lateral" role="button">☰</button>
+          <h2 class="text-lg font-semibold text-[#8B1E3F] truncate">Finanças em Movimento</h2>
         </div>
         {% if usuario %}
         <div class="text-sm text-right">
-          <p class="font-medium">Olá, {{ usuario.usunome }}!</p>
+          <p class="font-medium truncate">Olá, {{ usuario.usunome }}!</p>
           <div id="sessaoTempo" class="text-xs text-gray-500"></div>
           <a href="/logout" class="text-red-500 hover:underline">Sair</a>
         </div>
@@ -278,14 +73,6 @@
 
     .menu-item:hover {
       background-color: #f3f4f6;
-    }
-
-    .icon {
-      width: 1.25rem;
-      height: 1.25rem;
-      stroke: #8B1E3F;
-      fill: none;
-      flex-shrink: 0;
     }
   </style>
 
@@ -316,16 +103,13 @@
       const el = document.getElementById("sessaoTempo");
       if (!el) return;
 
-      // opção A: usar <input id="expTs" value="...">, se presente
       const expInput = document.getElementById("expTs");
       let exp_ts = expInput ? parseInt(expInput.value) : 0;
 
-      // opção B: usar cookie exp_ts, se não houver input
       if (!exp_ts) {
         const raw = getCookie("exp_ts");
         exp_ts = parseInt(decodeURIComponent(raw || "0"));
       }
-
       if (!exp_ts || isNaN(exp_ts)) return;
 
       function tick() {
@@ -347,7 +131,5 @@
 
     document.addEventListener("DOMContentLoaded", iniciarContadorSessao);
   </script>
-
 </body>
-
 </html>

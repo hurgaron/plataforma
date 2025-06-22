@@ -12,7 +12,7 @@ async def token_middleware(request: Request, call_next):
     if request.url.path.startswith(("/auth", "/static", "/login", "/docs", "/openapi.json")):
         return await call_next(request)
 
-    token = request.cookies.get("access_token")
+    token = request.cookies.get("token")
     if not token:
         return RedirectResponse("/login", status_code=307)
 

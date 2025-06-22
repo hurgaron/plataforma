@@ -1,21 +1,27 @@
-<!-- movimentacoes_material.html -->
 {% extends "layout.html" %}
 {% block title %}Movimentações - {{ material.matnome }}{% endblock %}
+
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-4">📦 Movimentações - {{ material.matnome }}</h2>
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-  <a href="/almoxarifado/movimentacoes"
-     class="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block mb-4">← Voltar à listagem geral</a>
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-bold text-[#8B1E3F] flex items-center gap-2">
+      📦 Movimentações - {{ material.matnome }}
+    </h2>
+    <a href="/almoxarifado/movimentacoes"
+       class="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline">
+      ← Voltar à listagem geral
+    </a>
+  </div>
 
-  <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-md">
+  <div class="overflow-x-auto bg-white shadow ring-1 ring-gray-200 rounded-xl">
     <table class="min-w-full divide-y divide-gray-200 text-sm">
-      <thead class="bg-gray-50">
+      <thead class="bg-gray-50 text-gray-700 font-semibold">
         <tr>
-          <th class="px-4 py-3 text-left font-semibold text-gray-700">Data</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-700">Tipo</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-700">Quantidade</th>
-          <th class="px-4 py-3 text-left font-semibold text-gray-700">Observação</th>
+          <th class="px-4 py-3 text-left">📅 Data</th>
+          <th class="px-4 py-3 text-left">🔁 Tipo</th>
+          <th class="px-4 py-3 text-left">🔢 Quantidade</th>
+          <th class="px-4 py-3 text-left">📝 Observação</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -28,7 +34,9 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="4" class="px-6 py-6 text-center text-sm text-gray-500">Nenhuma movimentação encontrada.</td>
+          <td colspan="4" class="px-6 py-6 text-center text-sm text-gray-500">
+            Nenhuma movimentação encontrada para este material.
+          </td>
         </tr>
         {% endfor %}
       </tbody>

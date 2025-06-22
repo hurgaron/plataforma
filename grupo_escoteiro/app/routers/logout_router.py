@@ -7,5 +7,5 @@ router = APIRouter()
 @router.get("/logout")
 def logout():
     response = RedirectResponse(url="/login", status_code=HTTP_302_FOUND)
-    response.delete_cookie("access_token")
+    response.delete_cookie("token")  # nome correto do cookie
     return response

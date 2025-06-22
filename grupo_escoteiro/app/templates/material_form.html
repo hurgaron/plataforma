@@ -1,60 +1,62 @@
-<!-- material_form.html -->
 {% extends "layout.html" %}
 {% block title %}{{ material and "Editar" or "Novo" }} Material{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">
-    {{ material and "Editar Material" or "Cadastrar Novo Material" }}
-  </h2>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white p-6 rounded-2xl shadow ring-1 ring-gray-200 space-y-6">
+    <h2 class="text-2xl font-bold text-[#8B1E3F] flex items-center gap-2">
+      🧰 {{ material and "Editar Material" or "Cadastrar Novo Material" }}
+    </h2>
 
-  <form action="{{ material and '/almoxarifado/' ~ material.matid ~ '/editar' or '/almoxarifado/novo' }}"
-        method="post"
-        class="space-y-6 bg-white p-6 rounded-lg shadow ring-1 ring-gray-200">
+    <form action="{{ material and '/almoxarifado/' ~ material.matid ~ '/editar' or '/almoxarifado/novo' }}"
+          method="post"
+          class="space-y-6">
 
-    <div>
-      <label for="matnome" class="block text-sm font-medium text-gray-700">Nome</label>
-      <input type="text" name="matnome" id="matnome"
-             value="{{ material.matnome if material else '' }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-    </div>
+      <div>
+        <label for="matnome" class="block text-sm font-medium text-gray-700">📦 Nome</label>
+        <input type="text" name="matnome" id="matnome" required
+               value="{{ material.matnome if material else '' }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+      </div>
 
-    <div>
-      <label for="matcod_barras" class="block text-sm font-medium text-gray-700">Código de Barras</label>
-      <input type="text" name="matcod_barras" id="matcod_barras"
-             value="{{ material.matcod_barras if material else '' }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-    </div>
+      <div>
+        <label for="matcod_barras" class="block text-sm font-medium text-gray-700">🔢 Código de Barras</label>
+        <input type="text" name="matcod_barras" id="matcod_barras"
+               value="{{ material.matcod_barras if material else '' }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+      </div>
 
-    <div>
-      <label for="matdescricao" class="block text-sm font-medium text-gray-700">Descrição</label>
-      <textarea name="matdescricao" id="matdescricao" rows="3"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ material.matdescricao if material else '' }}</textarea>
-    </div>
+      <div>
+        <label for="matdescricao" class="block text-sm font-medium text-gray-700">📝 Descrição</label>
+        <textarea name="matdescricao" id="matdescricao" rows="3"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">{{ material.matdescricao if material else '' }}</textarea>
+      </div>
 
-    <div>
-      <label for="matquantidade" class="block text-sm font-medium text-gray-700">Quantidade</label>
-      <input type="number" name="matquantidade" id="matquantidade" min="0"
-             value="{{ material.matquantidade if material else 0 }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
-    </div>
+      <div>
+        <label for="matquantidade" class="block text-sm font-medium text-gray-700">🔢 Quantidade</label>
+        <input type="number" name="matquantidade" id="matquantidade" min="0" required
+               value="{{ material.matquantidade if material else 0 }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+      </div>
 
-    <div>
-      <label for="matfoto_url" class="block text-sm font-medium text-gray-700">Foto (URL ou caminho)</label>
-      <input type="text" name="matfoto_url" id="matfoto_url"
-             value="{{ material.matfoto_url if material else '' }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-    </div>
+      <div>
+        <label for="matfoto_url" class="block text-sm font-medium text-gray-700">🖼️ Foto (URL ou caminho)</label>
+        <input type="text" name="matfoto_url" id="matfoto_url"
+               value="{{ material.matfoto_url if material else '' }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+      </div>
 
-    <div class="flex justify-end gap-4 pt-2">
-      <a href="/almoxarifado"
-         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm rounded hover:bg-gray-100 text-gray-700">
-        Cancelar
-      </a>
-      <button type="submit"
-              class="inline-flex items-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        {{ material and "Salvar Alterações" or "Cadastrar" }}
-      </button>
-    </div>
-  </form>
+      <div class="flex justify-between pt-4">
+        <a href="/almoxarifado"
+           class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-100 text-gray-700">
+          ← Voltar
+        </a>
+        <button type="submit"
+                class="inline-flex items-center gap-2 px-6 py-2 bg-[#8B1E3F] text-white text-sm font-semibold rounded-lg hover:bg-[#6f182f] focus:ring-2 focus:ring-offset-2 focus:ring-[#8B1E3F]">
+          {{ material and "💾 Salvar Alterações" or "✅ Cadastrar" }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

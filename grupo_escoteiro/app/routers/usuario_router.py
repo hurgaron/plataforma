@@ -1,14 +1,15 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from starlette.status import HTTP_303_SEE_OTHER
 from fastapi.templating import Jinja2Templates
-
 from app.database import SessionLocal
-from app.auth import obter_usuario_logado
+from app.auth import obter_usuario_logado, criar_hash_senha, criar_token, criar_cookie_token
 from app.models.usuario import Usuario
 from app.models.empresa import Empresa
+
 
 router = APIRouter(prefix="/usuario", tags=["Usuario"])
 templates = Jinja2Templates(directory="app/templates")
@@ -118,3 +119,51 @@ def editar_empresa(
     empresa.empcnpj = empcnpj
     db.commit()
     return RedirectResponse(url="/", status_code=HTTP_303_SEE_OTHER)
+
+@router.get("/registrar", response_class=HTMLResponse)
+def registrar_form(request: Request):
+    return templates.TemplateResponse("registrar.html", {"request": request})
+
+@router.post("/registrar")
+def registrar_usuario(
+    request: Request,
+    nome_empresa: str = Form(...),
+    nome_usuario: str = Form(...),
+    email: str = Form(...),
+    senha: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    # Verifica se já existe usuário com este e-mail
+    if db.query(Usuario).filter_by(usuemail=email).first():
+        return templates.TemplateResponse("registrar.html", {
+            "request": request,
+            "erro": "E-mail já cadastrado",
+            "nome_empresa": nome_empresa,
+            "nome_usuario": nome_usuario,
+            "email": email
+        })
+
+    # Cria empresa do tipo gratuito
+    empresa = Empresa(empnome=nome_empresa, emptipo="gratuito")
+    db.add(empresa)
+    db.commit()
+    db.refresh(empresa)
+
+    # Cria usuário mestre
+    novo_usuario = Usuario(
+        usunome=nome_usuario,
+        usuemail=email,
+        ususenha=criar_hash_senha(senha),
+        usufuncao="admin",
+        empid=empresa.empcod
+    )
+    db.add(novo_usuario)
+    db.commit()
+    db.refresh(novo_usuario)
+
+    # Autentica e redireciona
+    token = criar_token(novo_usuario)
+    resposta = RedirectResponse(url="/", status_code=HTTP_303_SEE_OTHER)
+    criar_cookie_token(resposta, token)
+
+    return resposta

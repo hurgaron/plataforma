@@ -1,109 +1,93 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Finanças em Movimento</title>
+  <title>Login • Finanças em Movimento</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    body {
-      background: linear-gradient(135deg, #8B1E3F 0%, #61142A 50%, #4A0E22 100%);
-    }
-  </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center text-gray-800 relative overflow-hidden">
-  <div class="flex w-full min-h-screen">
-    
-    <!-- LADO DO LOGIN -->
-    <div class="w-full md:w-1/2 flex items-center justify-center p-8 bg-white/90 backdrop-blur-md">
-      <div class="w-full max-w-md">
-        
-        <!-- LOGO E TÍTULO -->
-        <div class="flex items-center gap-3 mb-6">
-          <div class="bg-white text-[#8B1E3F] p-2 rounded-full shadow">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 17l6-6 4 4 6-6" />
-            </svg>
+<body class="bg-gray-100 text-gray-800">
+  <div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="max-w-5xl w-full bg-white rounded-2xl shadow-lg overflow-hidden grid md:grid-cols-2">
+
+      <!-- Lado esquerdo: texto de apresentação -->
+      <div class="bg-[#8B1E3F]/90 text-white p-10 flex flex-col justify-center">
+        <h2 class="text-2xl font-bold mb-4">📊 Finanças em Movimento</h2>
+        <p class="mb-6 text-sm text-gray-100 leading-relaxed">
+          O sistema ideal para quem quer <strong>organizar sua associação</strong> com facilidade.
+          Tudo em um só lugar — sem complicação e sem precisar ser especialista em finanças.
+        </p>
+
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-start gap-2">
+            <span class="text-green-300">✅</span>
+            Tudo em um só sistema: mensalidades, eventos, materiais e certificados
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-300">📱</span>
+            Funciona no celular, tablet ou computador
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-300">📈</span>
+            Relatórios simples e claros de entradas e saídas
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-300">📅</span>
+            Calendário de atividades integrado
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-300">🆓</span>
+            Comece grátis e use sem compromisso!
+          </li>
+        </ul>
+      </div>
+
+      <!-- Lado direito: formulário -->
+      <div class="p-10">
+        <h2 class="text-xl font-semibold text-[#8B1E3F] mb-6 text-center">🔐 Acesse sua conta</h2>
+
+        {% if erro %}
+        <div class="bg-red-100 text-red-700 text-sm px-4 py-2 rounded mb-4">{{ erro }}</div>
+        {% endif %}
+
+        <form method="post" action="/login" class="space-y-5">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+            <input type="email" name="email" id="email" value="{{ email or '' }}" required
+              class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
           </div>
-          <div class="text-left">
-            <h1 class="text-2xl font-bold text-gray-900">Finanças em Movimento</h1>
-            <p class="text-sm text-gray-500">Sistema de Gestão Financeira</p>
-          </div>
-        </div>
 
-        <!-- ALERTA DE ERRO -->
-        <div id="errorAlert" class="{% if not erro %}hidden{% endif %} mb-4 bg-red-100 border border-red-300 text-red-800 text-sm px-4 py-2 rounded flex items-center">
-          <i class="fas fa-exclamation-triangle mr-2"></i>
-          {{ erro if erro else "Credenciais inválidas. Verifique seu usuário e senha." }}
-        </div>
-
-        <!-- FORMULÁRIO -->
-        <form method="post" action="/login" class="space-y-5 text-left">
-
-          <!-- Usuário -->
-          <div class="relative">
-            <input type="text" name="usulogin" required placeholder="Usuário"
-              class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#8B1E3F] focus:outline-none placeholder-gray-400" />
-            <div class="absolute top-2.5 left-3 text-gray-400">
-              <i class="fas fa-user"></i>
-            </div>
+          <div>
+            <label for="senha" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+            <input type="password" name="senha" id="senha" required
+              class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
           </div>
 
-          <!-- Senha -->
-          <div class="relative">
-            <input type="password" id="password" name="ususenha" required placeholder="Senha"
-              class="w-full px-4 py-2 pl-10 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#8B1E3F] focus:outline-none placeholder-gray-400" />
-            <div class="absolute top-2.5 left-3 text-gray-400">
-              <i class="fas fa-lock"></i>
-            </div>
-            <div id="togglePassword" class="absolute top-2.5 right-3 text-gray-400 cursor-pointer">
-              <i class="far fa-eye"></i>
-            </div>
+          <div class="flex items-center justify-between text-sm">
+            <label class="inline-flex items-center gap-2">
+              <input type="checkbox" name="lembrar" class="rounded border-gray-300 text-[#8B1E3F] focus:ring-[#8B1E3F]">
+              Lembrar usuário
+            </label>
+            <a href="#" class="text-[#8B1E3F] hover:underline">Esqueceu a senha?</a>
           </div>
 
-          <!-- Botão -->
-          <button type="submit"
-            class="w-full bg-[#8B1E3F] hover:bg-[#6e182f] text-white py-2 rounded-md font-semibold shadow transition">
-            <i class="fas fa-sign-in-alt mr-2"></i> Entrar
-          </button>
+          <div class="pt-4">
+            <button type="submit"
+              class="w-full bg-[#8B1E3F] hover:bg-[#741934] text-white font-semibold py-2 px-4 rounded-md shadow transition">
+              Entrar
+            </button>
+          </div>
         </form>
 
-        <!-- Rodapé -->
-        <div class="mt-6 text-sm text-gray-600 text-center">
-          <p>
-            Ainda não tem uma conta?
-            <a href="/registrar" class="text-[#8B1E3F] hover:underline font-medium">Solicitar acesso</a>
-          </p>
-          <p class="mt-4 text-xs text-gray-400">&copy; 2025 Finanças em Movimento</p>
-        </div>
+        <p class="text-sm text-center mt-6 text-gray-600">
+          Ainda não tem uma conta?
+          <a href="/registrar" class="text-[#8B1E3F] font-medium hover:underline">Cadastre-se gratuitamente</a>
+        </p>
       </div>
     </div>
-
-    <!-- LADO DA IMAGEM -->
-    <div class="hidden md:flex w-1/2 items-center justify-center bg-[#61142A]">
-      <img src="/static/images/login_associacao.png" alt="Ilustração de gestão" class="w-3/4 max-w-lg drop-shadow-xl rounded-xl">
-    </div>
   </div>
-
-  <!-- Script -->
-  <script>
-    document.getElementById("togglePassword").addEventListener("click", function () {
-      const input = document.getElementById("password");
-      const icon = this.querySelector("i");
-      const tipo = input.getAttribute("type") === "password" ? "text" : "password";
-      input.setAttribute("type", tipo);
-      icon.classList.toggle("fa-eye");
-      icon.classList.toggle("fa-eye-slash");
-    });
-
-    const inputs = document.querySelectorAll("input");
-    inputs.forEach(input => {
-      input.addEventListener("input", () => {
-        document.getElementById("errorAlert")?.classList.add("hidden");
-      });
-    });
-  </script>
 </body>
+
 </html>

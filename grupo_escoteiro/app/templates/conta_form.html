@@ -2,84 +2,86 @@
 {% block title %}{{ 'Editar Conta' if conta else 'Nova Conta' }}{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">{{ 'Editar Conta' if conta else 'Nova Conta' }}</h2>
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white p-6 rounded-2xl shadow ring-1 ring-gray-200 space-y-6">
+    <h2 class="text-2xl font-bold text-[#8B1E3F] flex items-center gap-2">
+      💰 {{ 'Editar Conta' if conta else 'Nova Conta' }}
+    </h2>
 
-  <form method="post" action="{{ '/contas/' + conta.concod|string + '/editar' if conta else '/contas/novo' }}"
-    class="space-y-6 bg-white p-6 rounded-lg shadow ring-1 ring-gray-200">
-
-    <div>
-      <label for="contipo" class="block text-sm font-medium text-gray-700">Tipo</label>
-      <select name="contipo" required
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        <option value="">-- Selecione --</option>
-        <option value="receber" {% if conta and conta.contipo=='receber' %}selected{% endif %}>A Receber</option>
-        <option value="pagar" {% if conta and conta.contipo=='pagar' %}selected{% endif %}>A Pagar</option>
-      </select>
-    </div>
-
-    <div>
-      <label for="condescricao" class="block text-sm font-medium text-gray-700">Descrição</label>
-      <input type="text" name="condescricao" required
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-        value="{{ conta.condescricao if conta else '' }}">
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label for="convalor" class="block text-sm font-medium text-gray-700">Valor</label>
-        <input type="number" step="0.01" name="convalor" required
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          value="{{ conta.convalor if conta else '' }}">
-      </div>
+    <form method="post" action="{{ '/contas/' + conta.concod|string + '/editar' if conta else '/contas/novo' }}" class="space-y-6">
 
       <div>
-        <label for="convidovenc" class="block text-sm font-medium text-gray-700">Vencimento</label>
-        <input type="date" name="convidovenc" required
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-          value="{{ conta.convidovenc.isoformat() if conta else '' }}">
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label for="constatus" class="block text-sm font-medium text-gray-700">Status</label>
-        <select name="constatus"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="pendente" {% if not conta or conta.constatus=='pendente' %}selected{% endif %}>Pendente</option>
-          <option value="pago" {% if conta and conta.constatus=='pago' %}selected{% endif %}>Pago</option>
+        <label for="contipo" class="block text-sm font-medium text-gray-700">📂 Tipo</label>
+        <select name="contipo" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+          <option value="">-- Selecione --</option>
+          <option value="receber" {% if conta and conta.contipo=='receber' %}selected{% endif %}>A Receber</option>
+          <option value="pagar" {% if conta and conta.contipo=='pagar' %}selected{% endif %}>A Pagar</option>
         </select>
       </div>
 
       <div>
-        <label for="fornecedor_id" class="block text-sm font-medium text-gray-700">Fornecedor</label>
-        <select name="fornecedor_id"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          <option value="">-- Nenhum --</option>
-          {% for f in fornecedores %}
-          <option value="{{ f.forcod }}" {% if conta and conta.fornecedor_id==f.forcod %}selected{% endif %}>{{ f.fornome }}</option>
-          {% endfor %}
-        </select>
+        <label for="condescricao" class="block text-sm font-medium text-gray-700">📝 Descrição</label>
+        <input type="text" name="condescricao" required
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm"
+               value="{{ conta.condescricao if conta else '' }}">
       </div>
-    </div>
 
-    <div>
-      <label for="conobservacao" class="block text-sm font-medium text-gray-700">Observações</label>
-      <textarea name="conobservacao" rows="3"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ conta.conobservacao if conta else '' }}</textarea>
-    </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="convalor" class="block text-sm font-medium text-gray-700">💵 Valor</label>
+          <input type="number" step="0.01" name="convalor" required
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm"
+                 value="{{ conta.convalor if conta else '' }}">
+        </div>
 
-    <div class="flex justify-end gap-4 pt-4">
-      <a href="/contas"
-        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm rounded hover:bg-gray-100 text-gray-700">
-        Cancelar
-      </a>
-      <button type="submit"
-        class="inline-flex items-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        Salvar
-      </button>
-    </div>
+        <div>
+          <label for="convidovenc" class="block text-sm font-medium text-gray-700">📅 Vencimento</label>
+          <input type="date" name="convidovenc" required
+                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm"
+                 value="{{ conta.convidovenc.isoformat() if conta else '' }}">
+        </div>
+      </div>
 
-  </form>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="constatus" class="block text-sm font-medium text-gray-700">📌 Status</label>
+          <select name="constatus"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+            <option value="pendente" {% if not conta or conta.constatus=='pendente' %}selected{% endif %}>Pendente</option>
+            <option value="pago" {% if conta and conta.constatus=='pago' %}selected{% endif %}>Pago</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="fornecedor_id" class="block text-sm font-medium text-gray-700">🏢 Fornecedor</label>
+          <select name="fornecedor_id"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+            <option value="">-- Nenhum --</option>
+            {% for f in fornecedores %}
+            <option value="{{ f.forcod }}" {% if conta and conta.fornecedor_id==f.forcod %}selected{% endif %}>{{ f.fornome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="conobservacao" class="block text-sm font-medium text-gray-700">🗒️ Observações</label>
+        <textarea name="conobservacao" rows="3"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">{{ conta.conobservacao if conta else '' }}</textarea>
+      </div>
+
+      <div class="flex justify-between pt-4">
+        <a href="/contas"
+           class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-100 text-gray-700">
+          ← Voltar
+        </a>
+        <button type="submit"
+                class="inline-flex items-center gap-2 px-6 py-2 bg-[#8B1E3F] text-white text-sm font-semibold rounded-lg hover:bg-[#6f182f] focus:ring-2 focus:ring-offset-2 focus:ring-[#8B1E3F]">
+          💾 Salvar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

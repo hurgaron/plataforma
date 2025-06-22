@@ -219,3 +219,52 @@ def remover_participante(
     db.delete(participante)
     db.commit()
     return RedirectResponse(f"/atividade/admin/{atid}/editar", status_code=303)
+
+@router.get("/atividade/admin/{atid}/balanco", response_class=HTMLResponse)
+def ver_balanco(
+    atid: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    usuario = Depends(obter_usuario_logado)
+):
+    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    if not atividade:
+        raise HTTPException(status_code=404, detail="Atividade não encontrada")
+
+    participantes = db.query(AtividadeParticipante).filter_by(atid=atid).all()
+
+    total_geral = len(participantes)
+    total_pago = sum(p.valor_pago or 0 for p in participantes if p.status_pagamento == "pago")
+    total_pendente = len([p for p in participantes if p.status_pagamento == "pendente"])
+    total_isento = len([p for p in participantes if p.status_pagamento == "isento"])
+
+    # Estimar valor pendente
+    valor_pendente = sum(p.valor_pago or 0 for p in participantes if p.status_pagamento == "pendente")
+    valor_total_esperado = total_pago + valor_pendente
+
+    # Listagem de participantes pendentes
+    pendentes = []
+    for p in participantes:
+        if p.status_pagamento == "pendente":
+            nome = ""
+            if p.tipo == "jovem":
+                pessoa = db.query(Jovem).filter_by(jovcod=p.pessoa_id).first()
+                nome = pessoa.jovnome if pessoa else "(jovem removido)"
+            else:
+                pessoa = db.query(Adulto).filter_by(aducod=p.pessoa_id).first()
+                nome = pessoa.adunome if pessoa else "(adulto removido)"
+            pendentes.append({"nome": nome, "tipo": p.tipo})
+
+    return templates.TemplateResponse("atividade/balanco.html", {
+        "request": request,
+        "atividade": atividade,
+        "total_geral": total_geral,
+        "total_pago": total_pago,
+        "total_pendente": total_pendente,
+        "total_isento": total_isento,
+        "valor_pendente": valor_pendente,
+        "valor_total_esperado": valor_total_esperado,
+        "pendentes": pendentes,
+        "usuario": usuario,
+    })
+

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
@@ -41,7 +41,7 @@ def criar_token(dados: dict, expires_delta: timedelta = None):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 async def obter_usuario_logado(
-    token: str = Cookie(default=None, alias="access_token"),
+    token: str = Cookie(default=None, alias="token"),  # agora usa 'token'
     db: Session = Depends(get_db)
 ):
     credenciais_excecao = HTTPException(
@@ -66,3 +66,13 @@ async def obter_usuario_logado(
         raise credenciais_excecao
 
     return usuario
+
+
+def criar_hash_senha(senha: str) -> str:
+    return pwd_context.hash(senha)
+
+def criar_cookie_token(response: Response, token: str):
+    exp = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])["exp"]
+    response.set_cookie("token", token, httponly=True, samesite="lax", secure=False)
+    response.set_cookie("exp_ts", str(exp), httponly=False, samesite="lax")
+

@@ -43,7 +43,7 @@ def login(request: Request, response: Response,
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     resp = RedirectResponse(url="/dashboard", status_code=302)
-    resp.set_cookie("access_token", token, httponly=True, samesite="lax", secure=False)
+    resp.set_cookie("token", token, httponly=True, samesite="lax", secure=False)
     resp.set_cookie("exp_ts", str(exp_ts), httponly=False, samesite="lax")
 
     return resp

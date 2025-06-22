@@ -50,3 +50,27 @@ def editar_empresa(
     empresa.empcnpj = empcnpj
     db.commit()
     return RedirectResponse(url="/", status_code=HTTP_303_SEE_OTHER)
+
+@router.get("/upgrade", response_class=HTMLResponse)
+def exibir_upgrade(request: Request, usuario=Depends(obter_usuario_logado), db: Session = Depends(get_db)):
+    empresa = db.query(Empresa).filter_by(empcod=usuario.empid).first()
+    return templates.TemplateResponse("empresa/empresa_upgrade.html", {
+        "request": request,
+        "empresa": empresa,
+        "usuario": usuario
+    })
+
+@router.post("/upgrade")
+def salvar_upgrade(
+    request: Request,
+    empnome: str = Form(...),
+    empcnpj: str = Form(...),
+    db: Session = Depends(get_db),
+    usuario=Depends(obter_usuario_logado),
+):
+    empresa = db.query(Empresa).filter_by(empcod=usuario.empid).first()
+    empresa.empnome = empnome
+    empresa.empcnpj = empcnpj
+    empresa.emptipo = "pago"
+    db.commit()
+    return RedirectResponse(url="/empresa/editar", status_code=303)

@@ -1,56 +1,64 @@
-<!-- mensalidade_form.html e mensalidade_editar.html (padrão compartilhado) -->
 {% extends "layout.html" %}
 {% block title %}{{ 'Editar Mensalidade' if mensalidade else 'Nova Mensalidade' }}{% endblock %}
 {% block content %}
-<div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">{{ 'Editar Mensalidade' if mensalidade else 'Nova Mensalidade' }}</h2>
+<div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white p-6 rounded-2xl shadow ring-1 ring-gray-200 space-y-6">
+    <h2 class="text-2xl font-bold text-[#8B1E3F] flex items-center gap-2">
+      <span>💳</span> {{ 'Editar Mensalidade' if mensalidade else 'Nova Mensalidade' }}
+    </h2>
 
-  <form method="post" action="{{ mensalidade and '/mensalidades/' ~ mensalidade.menid ~ '/editar' or '/mensalidades/novo' }}"
-        class="space-y-6 bg-white p-6 rounded-lg shadow ring-1 ring-gray-200">
+    <form method="post" action="{{ mensalidade and '/mensalidades/' ~ mensalidade.menid ~ '/editar' or '/mensalidades/novo' }}"
+          class="space-y-6">
 
-    {% if not mensalidade %}
-    <div>
-      <label for="jovcod" class="block text-sm font-medium text-gray-700">Jovem</label>
-      <select name="jovcod" id="jovcod" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        <option value="">Selecione o jovem</option>
-        {% for j in jovens %}
-        <option value="{{ j.jovcod }}">{{ j.jovnome }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    {% endif %}
+      {% if not mensalidade %}
+      <div>
+        <label for="jovcod" class="block text-sm font-medium text-gray-700">Jovem</label>
+        <select name="jovcod" id="jovcod" required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+          <option value="">Selecione o jovem</option>
+          {% for j in jovens %}
+          <option value="{{ j.jovcod }}">{{ j.jovnome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
 
-    <div>
-      <label for="mendata_venc" class="block text-sm font-medium text-gray-700">Data de Vencimento</label>
-      <input type="date" name="mendata_venc" id="mendata_venc"
-             value="{{ mensalidade.mendata_venc if mensalidade else '' }}"
-             required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-    </div>
+      <div>
+        <label for="mendata_venc" class="block text-sm font-medium text-gray-700">📅 Data de Vencimento</label>
+        <input type="date" name="mendata_venc" id="mendata_venc"
+               value="{{ mensalidade.mendata_venc if mensalidade else '' }}"
+               required
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+      </div>
 
-    <div>
-      <label for="menvalor" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
-      <input type="number" step="0.01" name="menvalor" id="menvalor"
-             value="{{ mensalidade.menvalor if mensalidade else '' }}"
-             required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-    </div>
+      <div>
+        <label for="menvalor" class="block text-sm font-medium text-gray-700">💰 Valor (R$)</label>
+        <input type="number" step="0.01" name="menvalor" id="menvalor"
+               value="{{ mensalidade.menvalor if mensalidade else '' }}"
+               required
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
+      </div>
 
-    <div>
-      <label for="menobservacao" class="block text-sm font-medium text-gray-700">Observação</label>
-      <textarea name="menobservacao" id="menobservacao" rows="3"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ mensalidade.menobservacao if mensalidade else '' }}</textarea>
-    </div>
+      <div>
+        <label for="menobservacao" class="block text-sm font-medium text-gray-700">📝 Observação</label>
+        <textarea name="menobservacao" id="menobservacao" rows="3"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">{{ mensalidade.menobservacao if mensalidade else '' }}</textarea>
+      </div>
 
-    <div class="flex justify-end gap-4 pt-2">
-      <a href="/mensalidades"
-         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm rounded hover:bg-gray-100 text-gray-700">
-        Cancelar
-      </a>
-      <button type="submit"
-              class="inline-flex items-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        Salvar
-      </button>
-    </div>
-  </form>
+      <div class="flex justify-between pt-4">
+        <a href="/mensalidades"
+           class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-sm rounded-lg hover:bg-gray-100 text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Voltar
+        </a>
+        <button type="submit"
+                class="inline-flex items-center gap-2 px-6 py-2 bg-[#8B1E3F] text-white text-sm font-semibold rounded-lg hover:bg-[#6f182f] focus:ring-2 focus:ring-offset-2 focus:ring-[#8B1E3F]">
+          💾 Salvar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

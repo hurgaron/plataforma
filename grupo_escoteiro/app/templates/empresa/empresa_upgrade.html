@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Upgrade para Plano Pago{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-center text-[#8B1E3F] mb-4">🚀 Upgrade para Plano Pago</h2>
+
+<p class="text-sm text-gray-600 text-center mb-8">
+    Para ativar todos os recursos do sistema, complete as informações da sua empresa e confirme o upgrade.
+</p>
+
+<div class="max-w-xl mx-auto bg-white rounded-2xl shadow-md ring-1 ring-gray-200 p-8 space-y-6">
+    <form method="post" action="/empresa/upgrade" class="space-y-5">
+        <div>
+            <label for="empnome" class="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+            <input type="text" id="empnome" name="empnome" value="{{ empresa.empnome or '' }}" required
+                class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+        </div>
+
+        <div>
+            <label for="empcnpj" class="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+            <input type="text" id="empcnpj" name="empcnpj" value="{{ empresa.empcnpj or '' }}" required
+                class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+        </div>
+
+        <div class="pt-4">
+            <button type="submit"
+                class="w-full bg-[#8B1E3F] hover:bg-[#741934] text-white font-semibold py-2 px-4 rounded-md shadow transition">
+                🔒 Ativar Versão Paga
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
