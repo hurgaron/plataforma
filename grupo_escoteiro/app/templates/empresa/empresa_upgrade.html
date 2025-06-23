@@ -1,33 +1,61 @@
 {% extends "layout.html" %}
-{% block title %}Upgrade para Plano Pago{% endblock %}
+{% block title %}Upgrade de Plano{% endblock %}
 
 {% block content %}
-<h2 class="text-2xl font-bold text-center text-[#8B1E3F] mb-4">🚀 Upgrade para Plano Pago</h2>
+<div class="max-w-5xl mx-auto mt-8 bg-white rounded-2xl shadow-lg overflow-hidden grid md:grid-cols-2">
 
-<p class="text-sm text-gray-600 text-center mb-8">
-    Para ativar todos os recursos do sistema, complete as informações da sua empresa e confirme o upgrade.
-</p>
+    <!-- Lado esquerdo: Informações do plano -->
+    <div class="bg-[#8B1E3F]/90 text-white p-10 flex flex-col justify-center">
+        <h2 class="text-2xl font-bold mb-4">✨ Atualize para o Plano Profissional</h2>
+        <p class="mb-6 text-sm text-gray-100 leading-relaxed">
+            Com o plano profissional, sua associação desbloqueia recursos avançados que otimizam ainda mais a gestão e o
+            controle financeiro.
+        </p>
 
-<div class="max-w-xl mx-auto bg-white rounded-2xl shadow-md ring-1 ring-gray-200 p-8 space-y-6">
-    <form method="post" action="/empresa/upgrade" class="space-y-5">
-        <div>
-            <label for="empnome" class="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
-            <input type="text" id="empnome" name="empnome" value="{{ empresa.empnome or '' }}" required
-                class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
-        </div>
+        <ul class="space-y-3 text-sm">
+            <li class="flex items-start gap-2"><span class="text-green-300">🔓</span> Acesso ilimitado a módulos e
+                registros</li>
+            <li class="flex items-start gap-2"><span class="text-green-300">📊</span> Relatórios financeiros avançados
+            </li>
+            <li class="flex items-start gap-2"><span class="text-green-300">🧾</span> Geração automática de boletos e
+                recibos</li>
+            <li class="flex items-start gap-2"><span class="text-green-300">👥</span> Cadastro de múltiplos usuários da
+                equipe</li>
+            <li class="flex items-start gap-2"><span class="text-green-300">🎯</span> Suporte prioritário e atualizações
+                contínuas</li>
+        </ul>
+    </div>
 
-        <div>
-            <label for="empcnpj" class="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
-            <input type="text" id="empcnpj" name="empcnpj" value="{{ empresa.empcnpj or '' }}" required
-                class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
-        </div>
+    <!-- Lado direito: formulário -->
+    <div class="p-10">
+        <h2 class="text-xl font-semibold text-[#8B1E3F] mb-6 text-center">🚀 Atualizar para versão paga</h2>
 
-        <div class="pt-4">
-            <button type="submit"
-                class="w-full bg-[#8B1E3F] hover:bg-[#741934] text-white font-semibold py-2 px-4 rounded-md shadow transition">
-                🔒 Ativar Versão Paga
-            </button>
-        </div>
-    </form>
+        <form method="post" action="/empresa/upgrade" class="space-y-5">
+            <div>
+                <label for="empnome" class="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+                <input type="text" id="empnome" name="empnome" required value="{{ empresa.empnome }}"
+                    class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+            </div>
+
+            <div>
+                <label for="empcnpj" class="block text-sm font-medium text-gray-700 mb-1">CNPJ (opcional)</label>
+                <input type="text" id="empcnpj" name="empcnpj" value="{{ empresa.empcnpj or '' }}"
+                    class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+            </div>
+
+            <div class="pt-4">
+                <button type="submit"
+                    class="w-full bg-[#8B1E3F] hover:bg-[#741934] text-white font-semibold py-2 px-4 rounded-md shadow transition">
+                    🔒 Ativar Plano Profissional
+                </button>
+            </div>
+        </form>
+
+        <p class="text-sm text-center mt-6 text-gray-600">
+            Está com dúvidas?
+            <a href="/contato" class="text-[#8B1E3F] font-medium hover:underline">Fale com nossa equipe</a>
+        </p>
+    </div>
+
 </div>
 {% endblock %}

@@ -13,23 +13,26 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-papZ8FvIhVz7Mx5M9v9Xk5QH03nT+fT2BlCjsn0onY+oEiWVk5HXZo2fF9EF7VmDqNzltvC7NjkAK+lsLrg7kQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body class="bg-gray-100 text-gray-800">
   <div class="flex h-screen overflow-hidden">
     <!-- SIDEBAR -->
-    <aside id="sidebar" class="bg-white w-64 border-r border-gray-200 flex-shrink-0 hidden md:block">
-      <div class="p-6 border-b flex items-center justify-between">
-        <span class="text-xl font-bold text-[#8B1E3F]">Finanças</span>
+    <aside class="bg-white w-64 text-[#8B1E3F] border-r border-gray-200 flex flex-col h-screen">
+      <div class="p-6 border-b">
+        <h1 class="text-xl font-bold">Finanças</h1>
+        <p class="text-sm text-gray-500 -mt-1">em Movimento</p>
       </div>
       <nav class="overflow-y-auto h-full max-h-[calc(100vh-96px)] px-4 py-6 text-sm space-y-4">
         {% include 'menu_lateral_completo.html' %}
       </nav>
       <div class="p-4 border-t">
-        <a href="/logout" class="flex items-center gap-2 text-red-600 hover:underline text-sm" role="button" aria-label="Sair do sistema">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
-          </svg>
+        <a href="/logout" class="flex items-center gap-2 text-red-600 hover:underline text-sm" role="button"
+          aria-label="Sair do sistema">
+          <i class="fas fa-sign-out-alt text-red-600"></i>
           Sair
         </a>
       </div>
@@ -40,10 +43,12 @@
 
     <!-- MAIN -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+      <header class="bg-white shadow px-6 py-4 flex justify-between items-center border-b border-gray-200">
         <div class="flex items-center gap-4">
-          <button class="md:hidden text-[#8B1E3F]" onclick="toggleSidebar()" aria-label="Abrir menu lateral" role="button">☰</button>
-          <h2 class="text-lg font-semibold text-[#8B1E3F] truncate">Finanças em Movimento</h2>
+          <button class="md:hidden text-[#8B1E3F]" onclick="toggleSidebar()" aria-label="Abrir menu lateral"
+            role="button">
+            <i class="fas fa-bars"></i>
+          </button>
         </div>
         {% if usuario %}
         <div class="text-sm text-right">
@@ -132,4 +137,5 @@
     document.addEventListener("DOMContentLoaded", iniciarContadorSessao);
   </script>
 </body>
+
 </html>

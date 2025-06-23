@@ -1,167 +1,92 @@
-{% if usuario.usufuncao == 'admin' %}
-<div x-data="{ open: true }" class="space-y-1">
-  <button @click="open = !open"
-    class="flex justify-between items-center w-full px-2 py-1 text-sm font-semibold text-[#8B1E3F] hover:bg-gray-100 rounded">
-    <span>Administração</span>
-    <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform" fill="none"
-      stroke="currentColor" viewBox="0 0 24 24">
-      <path d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-  <div x-show="open" x-transition class="space-y-1 pl-2">
-    <a href="/dashboard"
-      class="menu-item {% if pagina_atual == 'dashboard' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" />
-      </svg>
-      Dashboard
-    </a>
-    <a href="/usuario/usuarios"
-      class="menu-item {% if pagina_atual == 'usuarios' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m3-6a4 4 0 100-8 4 4 0 000 8z" />
-      </svg>
-      Usuários
-    </a>
-    <a href="/empresa/editar"
-      class="menu-item {% if pagina_atual == 'empresa' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path d="M3 21V7a1 1 0 011-1h16a1 1 0 011 1v14M3 10h18" />
-      </svg>
-      Empresa
-    </a>
-  </div>
-</div>
-{% endif %}
+<!-- menu_lateral_completo.html com cabeçalho integrado ao layout claro e moderno -->
+<aside class="bg-white w-64 text-[#8B1E3F] border-r border-gray-200 flex flex-col h-screen">
+  <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-4 text-sm">
+    <!-- Administração -->
+    {% if usuario.usufuncao == 'admin' %}
+    <div x-data="{ open: true }">
+      <button @click="open = !open" class="flex items-center justify-between w-full font-semibold hover:text-[#6b122d]">
+        <span class="flex items-center gap-2">
+          <i class="fas fa-cogs text-[#8B1E3F]"></i> Administração
+        </span>
+        <i class="fas fa-chevron-down text-xs" :class="{ 'rotate-180': open }"></i>
+      </button>
+      <div x-show="open" x-transition class="mt-2 pl-6 space-y-2 text-gray-700">
+        <a href="/dashboard" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Dashboard</a>
+        <a href="/usuario/usuarios" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Usuários</a>
+        <a href="/empresa/editar" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Empresa</a>
+      </div>
+    </div>
+    {% endif %}
 
-<!-- RH -->
-{% if usuario.usufuncao in ['admin', 'colaborador'] %}
-<div x-data="{ open: true }" class="space-y-1 mt-4">
-  <button @click="open = !open"
-    class="flex justify-between items-center w-full px-2 py-1 text-sm font-semibold text-[#8B1E3F] hover:bg-gray-100 rounded">
-    <span>RH</span>
-    <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform" fill="none"
-      stroke="currentColor" viewBox="0 0 24 24">
-      <path d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-  <div x-show="open" x-transition class="space-y-1 pl-2">
-    <a href="/jovens"
-      class="menu-item {% if pagina_atual == 'jovens' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m3-6a4 4 0 100-8 4 4 0 000 8z" />
-      </svg>
-      Jovens
-    </a>
-    <a href="/adultos"
-      class="menu-item {% if pagina_atual == 'adultos' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path
-          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-      </svg>
-      Adultos
-    </a>
-    <a href="/fornecedores"
-      class="menu-item {% if pagina_atual == 'fornecedores' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-      Fornecedores
-    </a>
-  </div>
-</div>
-{% endif %}
+    <!-- RH -->
+    {% if usuario.usufuncao in ['admin', 'colaborador'] %}
+    <div x-data="{ open: true }">
+      <button @click="open = !open" class="flex items-center justify-between w-full font-semibold hover:text-[#6b122d]">
+        <span class="flex items-center gap-2">
+          <i class="fas fa-users text-[#8B1E3F]"></i> RH
+        </span>
+        <i class="fas fa-chevron-down text-xs" :class="{ 'rotate-180': open }"></i>
+      </button>
+      <div x-show="open" x-transition class="mt-2 pl-6 space-y-2 text-gray-700">
+        <a href="/jovens" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Jovens</a>
+        <a href="/adultos" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Adultos</a>
+        <a href="/fornecedores" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Fornecedores</a>
+      </div>
+    </div>
+    {% endif %}
 
-<!-- Almoxarifado -->
-<div x-data="{ open: true }" class="space-y-1 mt-4">
-  <button @click="open = !open"
-    class="flex justify-between items-center w-full px-2 py-1 text-sm font-semibold text-[#8B1E3F] hover:bg-gray-100 rounded">
-    <span>Almoxarifado</span>
-    <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform" fill="none"
-      stroke="currentColor" viewBox="0 0 24 24">
-      <path d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-  <div x-show="open" x-transition class="space-y-1 pl-2">
-    <a href="/almoxarifado"
-      class="menu-item {% if pagina_atual == 'materiais' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M21 16V8a2 2 0 00-2-2h-4l-2-2h-2l-2 2H5a2 2 0 00-2 2v8a2 2 0 002 2h14a2 2 0 002-2z" />
-      </svg>
-      Materiais
-    </a>
-    <a href="/almoxarifado/movimentacoes"
-      class="menu-item {% if pagina_atual == 'movimentacoes' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M4 4v16h16" />
-      </svg>
-      Movimentações
-    </a>
-  </div>
-</div>
+    <!-- Almoxarifado -->
+    <div x-data="{ open: true }">
+      <button @click="open = !open" class="flex items-center justify-between w-full font-semibold hover:text-[#6b122d]">
+        <span class="flex items-center gap-2">
+          <i class="fas fa-box text-[#8B1E3F]"></i> Almoxarifado
+        </span>
+        <i class="fas fa-chevron-down text-xs" :class="{ 'rotate-180': open }"></i>
+      </button>
+      <div x-show="open" x-transition class="mt-2 pl-6 space-y-2 text-gray-700">
+        <a href="/almoxarifado" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Materiais</a>
+        <a href="/almoxarifado/movimentacoes" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Movimentações</a>
+      </div>
+    </div>
 
-<!-- Certificados -->
-<div x-data="{ open: true }" class="space-y-1 mt-4">
-  <button @click="open = !open"
-    class="flex justify-between items-center w-full px-2 py-1 text-sm font-semibold text-[#8B1E3F] hover:bg-gray-100 rounded">
-    <span>Certificados</span>
-    <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform" fill="none"
-      stroke="currentColor" viewBox="0 0 24 24">
-      <path d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-  <div x-show="open" x-transition class="space-y-1 pl-2">
-    <a href="/certificados"
-      class="menu-item {% if pagina_atual == 'certificados' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M17 9l-5 3-5-3V5a2 2 0 012-2h6a2 2 0 012 2z" />
-        <path d="M12 22v-6m0 0l-3 3m3-3l3 3" />
-      </svg>
-      Certificados
-      {% if qtd_cert_pend %}<span
-        class="ml-auto bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">{{ qtd_cert_pend
-        }}</span>{% endif %}
-    </a>
-    <a href="/numeracoes"
-      class="menu-item {% if pagina_atual == 'numeracoes' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M4 6h16M4 10h16M4 14h16" />
-      </svg>
-      Numerações
-    </a>
-  </div>
-</div>
+    <!-- Certificados -->
+    <div x-data="{ open: true }">
+      <button @click="open = !open" class="flex items-center justify-between w-full font-semibold hover:text-[#6b122d]">
+        <span class="flex items-center gap-2">
+          <i class="fas fa-award text-[#8B1E3F]"></i> Certificados
+        </span>
+        <i class="fas fa-chevron-down text-xs" :class="{ 'rotate-180': open }"></i>
+      </button>
+      <div x-show="open" x-transition class="mt-2 pl-6 space-y-2 text-gray-700">
+        <a href="/certificados" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">
+          Certificados {% if qtd_cert_pend %}<span
+            class="ml-2 bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">{{ qtd_cert_pend
+            }}</span>{% endif %}
+        </a>
+        <a href="/numeracoes" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Numerações</a>
+      </div>
+    </div>
 
-<!-- Calendário -->
-<div x-data="{ open: true }" class="space-y-1 mt-4">
-  <button @click="open = !open"
-    class="flex justify-between items-center w-full px-2 py-1 text-sm font-semibold text-[#8B1E3F] hover:bg-gray-100 rounded">
-    <span>Calendário</span>
-    <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform" fill="none"
-      stroke="currentColor" viewBox="0 0 24 24">
-      <path d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-  <div x-show="open" x-transition class="space-y-1 pl-2">
-    <a href="/calendario"
-      class="menu-item {% if pagina_atual == 'calendario' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M8 7V3m8 4V3M3 11h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
-      </svg>
-      Atividades no Calendário
-    </a>
-    <a href="/atividade/admin" class="menu-item">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M3 7h18M3 12h18M3 17h18" />
-      </svg>
-      Atividades Internas
-    </a>
-    <a href="/calendario/gerenciar"
-      class="menu-item {% if pagina_atual == 'gerenciar_calendario' %}bg-[#8B1E3F]/10 text-[#8B1E3F] font-semibold{% endif %}">
-      <svg class="h-5 w-5 text-[#8B1E3F]" fill="none" stroke="currentColor">
-        <path d="M12 8v4l3 3" />
-      </svg>
-      Gerenciar Calendários
+    <!-- Calendário -->
+    <div x-data="{ open: true }">
+      <button @click="open = !open" class="flex items-center justify-between w-full font-semibold hover:text-[#6b122d]">
+        <span class="flex items-center gap-2">
+          <i class="fas fa-calendar-alt text-[#8B1E3F]"></i> Calendário
+        </span>
+        <i class="fas fa-chevron-down text-xs" :class="{ 'rotate-180': open }"></i>
+      </button>
+      <div x-show="open" x-transition class="mt-2 pl-6 space-y-2 text-gray-700">
+        <a href="/calendario" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Atividades</a>
+        <a href="/atividade/admin" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Internas</a>
+        <a href="/calendario/gerenciar" class="hover:bg-[#8B1E3F]/10 rounded px-2 py-1 block">Gerenciar</a>
+      </div>
+    </div>
+
+  </nav>
+
+  <div class="p-4 border-t border-gray-100 text-sm text-gray-600">
+    <a href="/logout" class="flex items-center gap-2 hover:text-red-600">
+      <i class="fas fa-sign-out-alt"></i> Sair
     </a>
   </div>
-</div>
+</aside>

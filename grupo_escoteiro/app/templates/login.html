@@ -10,80 +10,82 @@
 
 <body class="bg-gray-100 text-gray-800">
   <div class="min-h-screen flex items-center justify-center px-4 py-12">
-    <div class="max-w-5xl w-full bg-white rounded-2xl shadow-lg overflow-hidden grid md:grid-cols-2">
+    <div
+      class="max-w-5xl w-full bg-white rounded-2xl shadow-lg ring-1 ring-gray-200 overflow-hidden grid md:grid-cols-2">
 
-      <!-- Lado esquerdo: texto de apresentação -->
-      <div class="bg-[#8B1E3F]/90 text-white p-10 flex flex-col justify-center">
-        <h2 class="text-2xl font-bold mb-4">📊 Finanças em Movimento</h2>
-        <p class="mb-6 text-sm text-gray-100 leading-relaxed">
-          O sistema ideal para quem quer <strong>organizar sua associação</strong> com facilidade.
-          Tudo em um só lugar — sem complicação e sem precisar ser especialista em finanças.
+      <!-- LADO ESQUERDO: INFORMAÇÃO + ILUSTRAÇÃO -->
+      <div class="bg-[#FDF7F9] text-[#8B1E3F] p-10 flex flex-col justify-center">
+        <h2 class="text-3xl font-bold mb-4">Finanças em Movimento</h2>
+        <p class="text-sm text-gray-700 mb-6">
+          Sistema completo para a gestão de associações e grupos escoteiros. Controle mensalidades, certificados,
+          almoxarifado, fluxo de caixa e atividades com facilidade.
         </p>
-
-        <ul class="space-y-3 text-sm">
-          <li class="flex items-start gap-2">
-            <span class="text-green-300">✅</span>
-            Tudo em um só sistema: mensalidades, eventos, materiais e certificados
+        <ul class="space-y-3 text-sm text-gray-800">
+          <li class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-[#8B1E3F]" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586 5.707 8.293A1 1 0 104.293 9.707l4 4a1 1 0 001.414 0l7-7z" />
+            </svg>
+            Visual moderno e responsivo
           </li>
-          <li class="flex items-start gap-2">
-            <span class="text-green-300">📱</span>
-            Funciona no celular, tablet ou computador
+          <li class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-[#8B1E3F]" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586 5.707 8.293A1 1 0 104.293 9.707l4 4a1 1 0 001.414 0l7-7z" />
+            </svg>
+            Controle financeiro completo
           </li>
-          <li class="flex items-start gap-2">
-            <span class="text-green-300">📈</span>
-            Relatórios simples e claros de entradas e saídas
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-green-300">📅</span>
-            Calendário de atividades integrado
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-green-300">🆓</span>
-            Comece grátis e use sem compromisso!
+          <li class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-[#8B1E3F]" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586 5.707 8.293A1 1 0 104.293 9.707l4 4a1 1 0 001.414 0l7-7z" />
+            </svg>
+            Cadastre-se gratuitamente
           </li>
         </ul>
+        <img src="/static/img/login-ilustracao.svg" alt="Ilustração" class="mt-6 max-h-56 mx-auto w-auto">
       </div>
 
-      <!-- Lado direito: formulário -->
+      <!-- LADO DIREITO: FORMULÁRIO -->
       <div class="p-10">
-        <h2 class="text-xl font-semibold text-[#8B1E3F] mb-6 text-center">🔐 Acesse sua conta</h2>
+        <h2 class="text-2xl font-bold text-[#8B1E3F] mb-6 text-center">Acesso ao Sistema</h2>
 
         {% if erro %}
-        <div class="bg-red-100 text-red-700 text-sm px-4 py-2 rounded mb-4">{{ erro }}</div>
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
+          {{ erro }}
+        </div>
         {% endif %}
 
         <form method="post" action="/login" class="space-y-5">
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-            <input type="email" name="email" id="email" value="{{ email or '' }}" required
-              class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+            <label for="usulogin" class="block text-sm font-medium text-gray-700">E-mail</label>
+            <input type="text" id="usulogin" name="usulogin" required value="{{ email or '' }}"
+              class="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
           </div>
 
           <div>
-            <label for="senha" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-            <input type="password" name="senha" id="senha" required
-              class="w-full rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
+            <label for="ususenha" class="block text-sm font-medium text-gray-700">Senha</label>
+            <input type="password" id="ususenha" name="ususenha" required
+              class="w-full mt-1 rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F]">
           </div>
 
           <div class="flex items-center justify-between text-sm">
-            <label class="inline-flex items-center gap-2">
-              <input type="checkbox" name="lembrar" class="rounded border-gray-300 text-[#8B1E3F] focus:ring-[#8B1E3F]">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="lembrar" class="text-[#8B1E3F] focus:ring-[#8B1E3F] rounded">
               Lembrar usuário
             </label>
-            <a href="#" class="text-[#8B1E3F] hover:underline">Esqueceu a senha?</a>
+            <a href="#" class="text-[#8B1E3F] hover:underline">Esqueci minha senha</a>
           </div>
 
-          <div class="pt-4">
-            <button type="submit"
-              class="w-full bg-[#8B1E3F] hover:bg-[#741934] text-white font-semibold py-2 px-4 rounded-md shadow transition">
-              Entrar
-            </button>
-          </div>
+          <button type="submit"
+            class="w-full bg-[#8B1E3F] hover:bg-[#701732] text-white font-semibold py-2 rounded-md shadow transition">
+            Entrar
+          </button>
         </form>
 
-        <p class="text-sm text-center mt-6 text-gray-600">
+        <p class="mt-6 text-center text-sm text-gray-600">
           Ainda não tem uma conta?
-          <a href="/registrar" class="text-[#8B1E3F] font-medium hover:underline">Cadastre-se gratuitamente</a>
+          <a href="/registrar" class="text-[#8B1E3F] hover:underline font-medium">Cadastre-se gratuitamente</a>
         </p>
       </div>
     </div>
