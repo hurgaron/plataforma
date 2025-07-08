@@ -6,8 +6,15 @@
     %})
   </div>
   <div class="space-x-2">
-    <button type="button" onclick="editarCusto({{ c.id }})" class="text-blue-600 hover:underline">Editar</button>
-    <button onclick="removerCusto({{ c.id }})" class="text-red-600 hover:underline text-sm">🗑 Remover</button>
+    <button type="button" onclick="editarCusto({{ c.id }})"
+      class="text-blue-600 hover:text-blue-800 p-2 rounded hover:bg-blue-50 transition" title="Editar">
+      <i class="fas fa-edit"></i>
+    </button>
+
+    <button type="button" onclick="removerCusto({{ c.id }})"
+      class="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-50 transition" title="Remover">
+      <i class="fas fa-trash-alt"></i>
+    </button>
   </div>
 </div>
 {% else %}

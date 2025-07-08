@@ -20,7 +20,11 @@ export async function carregarCustos(atid) {
 export function configurarFormularioCustos() {
   console.log("[CUSTOS] configurando listeners do formulário de custo...");
   const form = document.getElementById("form-custo");
-  const botao = form.querySelector("button[type='submit']");
+  const botaoAntigo = form.querySelector("button[type='submit']");
+
+  // Clona o botão e substitui o antigo para remover listeners antigos
+  const botao = botaoAntigo.cloneNode(true);
+  botaoAntigo.replaceWith(botao);
 
   botao.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -57,6 +61,7 @@ export function configurarFormularioCustos() {
     }
   });
 }
+
 
 export async function editarCusto(id) {
   console.log("[CUSTOS] editando custo", id);

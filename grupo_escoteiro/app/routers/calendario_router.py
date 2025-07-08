@@ -1,3 +1,6 @@
+from sqlalchemy.dialects import postgresql
+from sqlalchemy import text
+import matplotlib.pyplot as plt
 import base64
 from calendar import monthrange
 import io
@@ -21,17 +24,16 @@ from app.models.atividade_custo import AtividadeCusto
 from fpdf import FPDF
 import matplotlib
 matplotlib.use("Agg")  # <- Adicione esta linha antes de importar pyplot
-import matplotlib.pyplot as plt
-from sqlalchemy import text
-from sqlalchemy.dialects import postgresql
 
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
+
 @router.get("/calendario", response_class=HTMLResponse)
 def exibir_calendario(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    calendarios = db.query(Calendario).filter(Calendario.empid == usuario.empid).all()
+    calendarios = db.query(Calendario).filter(
+        Calendario.empid == usuario.empid).all()
 
     # Agrupamento simples com base no nome
     grupos = {
@@ -58,6 +60,7 @@ def exibir_calendario(request: Request, db: Session = Depends(get_db), usuario=D
         "hoje": date.today()
     })
 
+
 @router.get("/calendario/eventos")
 def listar_eventos(
     calids: List[int] = Query(default=None),
@@ -69,7 +72,8 @@ def listar_eventos(
     if calids:
         query = query.filter(Atividade.calid.in_(calids))
 
-    print(query.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
+    print(query.statement.compile(dialect=postgresql.dialect(),
+          compile_kwargs={"literal_binds": True}))
 
     atividades = query.all()
     eventos = [
@@ -88,6 +92,7 @@ def listar_eventos(
     ]
     return JSONResponse(eventos)
 
+
 @router.get("/calendario/nova", response_class=HTMLResponse)
 def nova_atividade(data: str, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     data_inicio = datetime.fromisoformat(data)
@@ -99,9 +104,11 @@ def nova_atividade(data: str, request: Request, db: Session = Depends(get_db), u
         "data_fim": data_fim
     })
 
+
 @router.get("/calendario/{atid}/editar", response_class=HTMLResponse)
 def editar_atividade(atid: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter(Atividade.atid == atid, Atividade.empid == usuario.empid).first()
+    atividade = db.query(Atividade).filter(
+        Atividade.atid == atid, Atividade.empid == usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
     return templates.TemplateResponse("modal_atividade.html", {
@@ -110,6 +117,7 @@ def editar_atividade(atid: int, request: Request, db: Session = Depends(get_db),
         "data_inicio": atividade.data_inicio,
         "data_fim": atividade.data_fim
     })
+
 
 @router.post("/calendario/salvar")
 def salvar_atividade(
@@ -125,9 +133,11 @@ def salvar_atividade(
     usuario=Depends(obter_usuario_logado)
 ):
     if atid:
-        atividade = db.query(Atividade).filter(Atividade.atid == atid, Atividade.empid == usuario.empid).first()
+        atividade = db.query(Atividade).filter(
+            Atividade.atid == atid, Atividade.empid == usuario.empid).first()
         if not atividade:
-            raise HTTPException(status_code=404, detail="Atividade não encontrada")
+            raise HTTPException(
+                status_code=404, detail="Atividade não encontrada")
     else:
         atividade = Atividade(empid=usuario.empid, criado_por=usuario.usucod)
 
@@ -144,9 +154,11 @@ def salvar_atividade(
 
     return JSONResponse({"sucesso": True, "atid": atividade.atid})
 
+
 @router.post("/calendario/{atid}/atualizar-data")
 def atualizar_data(atid: int, payload: dict, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter(Atividade.atid == atid, Atividade.empid == usuario.empid).first()
+    atividade = db.query(Atividade).filter(
+        Atividade.atid == atid, Atividade.empid == usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
@@ -155,18 +167,22 @@ def atualizar_data(atid: int, payload: dict, db: Session = Depends(get_db), usua
     db.commit()
     return {"sucesso": True}
 
+
 @router.post("/calendario/{atid}/excluir")
 def excluir_atividade(atid: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter(Atividade.atid == atid, Atividade.empid == usuario.empid).first()
+    atividade = db.query(Atividade).filter(
+        Atividade.atid == atid, Atividade.empid == usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
     db.delete(atividade)
     db.commit()
     return {"sucesso": True}
 
+
 @router.get("/calendario/{atid}/participantes", response_class=HTMLResponse)
 def listar_participantes(atid: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    atividade = db.query(Atividade).filter_by(
+        atid=atid, empid=usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
@@ -183,9 +199,11 @@ def listar_participantes(atid: int, request: Request, db: Session = Depends(get_
 
     return templates.TemplateResponse("partials/participantes_lista.html", {"request": request, "participantes": lista})
 
+
 @router.post("/calendario/{atid}/participantes/adicionar")
 def adicionar_participante(atid: int, tipo: str = Form(...), pessoa_id: int = Form(...), db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    atividade = db.query(Atividade).filter_by(
+        atid=atid, empid=usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
@@ -199,23 +217,30 @@ def adicionar_participante(atid: int, tipo: str = Form(...), pessoa_id: int = Fo
     db.commit()
     return {"sucesso": True}
 
+
 @router.post("/calendario/participantes/{id}/remover")
 def remover_participante(id: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    participante = db.query(AtividadeParticipante).filter_by(id=id, empid=usuario.empid).first()
+    participante = db.query(AtividadeParticipante).filter_by(
+        id=id, empid=usuario.empid).first()
     if not participante:
-        raise HTTPException(status_code=404, detail="Participante não encontrado")
+        raise HTTPException(
+            status_code=404, detail="Participante não encontrado")
     db.delete(participante)
     db.commit()
     return {"sucesso": True}
 
+
 @router.get("/calendario/{atid}/custos", response_class=HTMLResponse)
 def listar_custos(atid: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    atividade = db.query(Atividade).filter_by(
+        atid=atid, empid=usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
-    custos = db.query(AtividadeCusto).filter_by(atid=atid, empid=usuario.empid).all()
+    custos = db.query(AtividadeCusto).filter_by(
+        atid=atid, empid=usuario.empid).all()
     return templates.TemplateResponse("partials/custos_lista.html", {"request": request, "custos": custos})
+
 
 @router.post("/calendario/{atid}/custos/adicionar")
 def adicionar_custo(
@@ -227,7 +252,8 @@ def adicionar_custo(
     db: Session = Depends(get_db),
     usuario=Depends(obter_usuario_logado)
 ):
-    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    atividade = db.query(Atividade).filter_by(
+        atid=atid, empid=usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
@@ -243,23 +269,29 @@ def adicionar_custo(
     db.commit()
     return {"sucesso": True}
 
+
 @router.post("/calendario/custos/{id}/remover")
 def remover_custo(id: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    custo = db.query(AtividadeCusto).filter_by(id=id, empid=usuario.empid).first()
+    custo = db.query(AtividadeCusto).filter_by(
+        id=id, empid=usuario.empid).first()
     if not custo:
         raise HTTPException(status_code=404, detail="Custo não encontrado")
     db.delete(custo)
     db.commit()
     return {"sucesso": True}
 
+
 @router.get("/calendario/{atid}/receitas", response_class=HTMLResponse)
 def listar_receitas(atid: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    atividade = db.query(Atividade).filter_by(
+        atid=atid, empid=usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
-    receitas = db.query(AtividadeReceita).filter_by(atid=atid, empid=usuario.empid).all()
+    receitas = db.query(AtividadeReceita).filter_by(
+        atid=atid, empid=usuario.empid).all()
     return templates.TemplateResponse("partials/receitas_lista.html", {"request": request, "receitas": receitas})
+
 
 @router.post("/calendario/{atid}/receitas/adicionar")
 def adicionar_receita(
@@ -271,7 +303,8 @@ def adicionar_receita(
     db: Session = Depends(get_db),
     usuario=Depends(obter_usuario_logado)
 ):
-    atividade = db.query(Atividade).filter_by(atid=atid, empid=usuario.empid).first()
+    atividade = db.query(Atividade).filter_by(
+        atid=atid, empid=usuario.empid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
@@ -287,28 +320,34 @@ def adicionar_receita(
     db.commit()
     return {"sucesso": True}
 
+
 @router.post("/calendario/receitas/{id}/remover")
 def remover_receita(id: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    receita = db.query(AtividadeReceita).filter_by(id=id, empid=usuario.empid).first()
+    receita = db.query(AtividadeReceita).filter_by(
+        id=id, empid=usuario.empid).first()
     if not receita:
         raise HTTPException(status_code=404, detail="Receita não encontrada")
     db.delete(receita)
     db.commit()
     return {"sucesso": True}
 
+
 @router.get("/api/jovens/lista")
 def listar_jovens(db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     jovens = db.query(Jovem).filter(Jovem.empid == usuario.empid).all()
     return [{"id": j.jovcod, "nome": j.jovnome} for j in jovens]
+
 
 @router.get("/api/adultos/lista")
 def listar_adultos(db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     adultos = db.query(Adulto).filter(Adulto.empid == usuario.empid).all()
     return [{"id": a.aducod, "nome": a.adunome} for a in adultos]
 
+
 @router.get("/calendario/custos/{id}/editar")
 def obter_custo(id: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    custo = db.query(AtividadeCusto).filter_by(id=id, empid=usuario.empid).first()
+    custo = db.query(AtividadeCusto).filter_by(
+        id=id, empid=usuario.empid).first()
     if not custo:
         raise HTTPException(status_code=404, detail="Custo não encontrado")
     return {
@@ -319,7 +358,8 @@ def obter_custo(id: int, db: Session = Depends(get_db), usuario=Depends(obter_us
         "tipo_lancamento": custo.tipo_lancamento.value,
         "tipo": custo.tipo
     }
-    
+
+
 @router.post("/calendario/custos/{id}/atualizar")
 def atualizar_custo(
     id: int,
@@ -331,7 +371,8 @@ def atualizar_custo(
     db: Session = Depends(get_db),
     usuario=Depends(obter_usuario_logado)
 ):
-    custo = db.query(AtividadeCusto).filter_by(id=id, empid=usuario.empid).first()
+    custo = db.query(AtividadeCusto).filter_by(
+        id=id, empid=usuario.empid).first()
     if not custo:
         raise HTTPException(status_code=404, detail="Custo não encontrado")
 
@@ -343,13 +384,15 @@ def atualizar_custo(
     db.commit()
     return {"sucesso": True}
 
+
 @router.get("/atividade/{atid}/balanco", response_class=HTMLResponse)
 def balanco_atividade(atid: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     atividade = db.query(Atividade).filter(Atividade.atid == atid).first()
     if not atividade:
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
-    receitas = db.query(AtividadeReceita).filter(AtividadeReceita.atid == atid).all()
+    receitas = db.query(AtividadeReceita).filter(
+        AtividadeReceita.atid == atid).all()
     custos = db.query(AtividadeCusto).filter(AtividadeCusto.atid == atid).all()
 
     def soma(lista, tipo_lancamento):
@@ -381,13 +424,15 @@ def balanco_atividade(atid: int, request: Request, db: Session = Depends(get_db)
         "usuario": usuario
     })
 
+
 def gerar_grafico(receita_prev, receita_real, custo_prev, custo_real, saldo_prev, saldo_real):
     labels = [
         "Receita Prevista", "Receita Realizada",
         "Custo Previsto", "Custo Realizado",
         "Saldo Previsto", "Saldo Realizado"
     ]
-    values = [receita_prev, receita_real, custo_prev, custo_real, saldo_prev, saldo_real]
+    values = [receita_prev, receita_real, custo_prev,
+              custo_real, saldo_prev, saldo_real]
     colors = ["#d97706", "#8B1E3F", "#e11d48", "#1E40AF", "#047857", "#0f766e"]
 
     fig, ax = plt.subplots(figsize=(8, 4))
@@ -401,6 +446,7 @@ def gerar_grafico(receita_prev, receita_real, custo_prev, custo_real, saldo_prev
     plt.close(fig)
     buf.seek(0)
     return buf
+
 
 class PDF(FPDF):
     def header(self):
@@ -417,7 +463,9 @@ class PDF(FPDF):
         self.set_y(-15)
         self.set_font("Helvetica", 'I', 8)
         self.set_text_color(128)
-        self.cell(0, 10, f'Emitido em {date.today().strftime("%d/%m/%Y")} - Página {self.page_no()}', 0, 0, 'C')
+        self.cell(
+            0, 10, f'Emitido em {date.today().strftime("%d/%m/%Y")} - Página {self.page_no()}', 0, 0, 'C')
+
 
 @router.get("/atividade/{atid}/balanco/pdf")
 def gerar_pdf_atividade(atid: int, db: Session = Depends(get_db)):
@@ -425,7 +473,8 @@ def gerar_pdf_atividade(atid: int, db: Session = Depends(get_db)):
     if not atividade:
         return StreamingResponse(io.BytesIO("Atividade não encontrada".encode("utf-8")), media_type="text/plain", status_code=404)
 
-    receitas = db.query(AtividadeReceita).filter(AtividadeReceita.atid == atid).all()
+    receitas = db.query(AtividadeReceita).filter(
+        AtividadeReceita.atid == atid).all()
     custos = db.query(AtividadeCusto).filter(AtividadeCusto.atid == atid).all()
 
     participantes = db.execute(
@@ -442,14 +491,19 @@ def gerar_pdf_atividade(atid: int, db: Session = Depends(get_db)):
         """), {"atid": atid}
     ).fetchall()
 
-    total_receita_prev = sum(r.quantidade * r.valor_unitario for r in receitas if r.tipo_lancamento.value == 'previsto')
-    total_receita_real = sum(r.quantidade * r.valor_unitario for r in receitas if r.tipo_lancamento.value == 'realizado')
-    total_custo_prev = sum(c.quantidade * c.valor_unitario for c in custos if c.tipo_lancamento.value == 'previsto')
-    total_custo_real = sum(c.quantidade * c.valor_unitario for c in custos if c.tipo_lancamento.value == 'realizado')
+    total_receita_prev = sum(
+        r.quantidade * r.valor_unitario for r in receitas if r.tipo_lancamento.value == 'previsto')
+    total_receita_real = sum(
+        r.quantidade * r.valor_unitario for r in receitas if r.tipo_lancamento.value == 'realizado')
+    total_custo_prev = sum(
+        c.quantidade * c.valor_unitario for c in custos if c.tipo_lancamento.value == 'previsto')
+    total_custo_real = sum(
+        c.quantidade * c.valor_unitario for c in custos if c.tipo_lancamento.value == 'realizado')
     saldo_prev = total_receita_prev - total_custo_prev
     saldo_real = total_receita_real - total_custo_real
 
-    grafico = gerar_grafico(total_receita_prev, total_receita_real, total_custo_prev, total_custo_real, saldo_prev, saldo_real)
+    grafico = gerar_grafico(total_receita_prev, total_receita_real,
+                            total_custo_prev, total_custo_real, saldo_prev, saldo_real)
 
     pdf = PDF()
     pdf.add_page()
@@ -459,7 +513,8 @@ def gerar_pdf_atividade(atid: int, db: Session = Depends(get_db)):
     pdf.set_text_color(0)
     pdf.cell(0, 6, f"Título: {atividade.titulo}", ln=True)
     pdf.cell(0, 6, f"Local: {atividade.local}", ln=True)
-    pdf.cell(0, 6, f"Data: {atividade.data_inicio.strftime('%d/%m/%Y %H:%M')} até {atividade.data_fim.strftime('%d/%m/%Y %H:%M')}", ln=True)
+    pdf.cell(
+        0, 6, f"Data: {atividade.data_inicio.strftime('%d/%m/%Y %H:%M')} até {atividade.data_fim.strftime('%d/%m/%Y %H:%M')}", ln=True)
     pdf.ln(4)
 
     pdf.set_font("Helvetica", 'B', 12)
@@ -476,7 +531,8 @@ def gerar_pdf_atividade(atid: int, db: Session = Depends(get_db)):
         pdf.set_fill_color(240, 240, 240)
         headers = ["Descrição", "Qtd", "V. Unit.", "Previsto", "Realizado"]
         for h in headers:
-            pdf.cell(38 if h == "Descrição" else 30, 8, h, border=1, align='C', fill=True)
+            pdf.cell(38 if h == "Descrição" else 30, 8,
+                     h, border=1, align='C', fill=True)
         pdf.ln()
         pdf.set_font("Helvetica", '', 10)
         for i in itens:
@@ -514,13 +570,15 @@ def gerar_pdf_atividade(atid: int, db: Session = Depends(get_db)):
         "Content-Disposition": f"inline; filename=balanco_atividade_{atid}.pdf"
     })
 
+
 def gerar_grafico_base64(receita_prev, receita_real, custo_prev, custo_real, saldo_prev, saldo_real):
     labels = [
         "Receita Prevista", "Receita Realizada",
         "Custo Previsto", "Custo Realizado",
         "Saldo Previsto", "Saldo Realizado"
     ]
-    values = [receita_prev, receita_real, custo_prev, custo_real, saldo_prev, saldo_real]
+    values = [receita_prev, receita_real, custo_prev,
+              custo_real, saldo_prev, saldo_real]
     colors = ["#d97706", "#8B1E3F", "#e11d48", "#1E40AF", "#047857", "#0f766e"]
 
     fig, ax = plt.subplots(figsize=(8, 4))
@@ -534,15 +592,17 @@ def gerar_grafico_base64(receita_prev, receita_real, custo_prev, custo_real, sal
     plt.close(fig)
     buf.seek(0)
 
-    return f"data:image/png;base64,{base64.b64encode(buf.read()).decode('utf-8')}"    
-    
+    return f"data:image/png;base64,{base64.b64encode(buf.read()).decode('utf-8')}"
+
+
 @router.get("/atividade/{atid}/balanco/impressao", response_class=HTMLResponse)
 def balanco_atividade_impressao(atid: int, request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     atividade = db.query(Atividade).filter(Atividade.atid == atid).first()
     if not atividade:
         raise HTTPException(status_code=404, detail="Atividade não encontrada")
 
-    receitas = db.query(AtividadeReceita).filter(AtividadeReceita.atid == atid).all()
+    receitas = db.query(AtividadeReceita).filter(
+        AtividadeReceita.atid == atid).all()
     custos = db.query(AtividadeCusto).filter(AtividadeCusto.atid == atid).all()
 
     participantes = db.execute(text("""
@@ -584,14 +644,20 @@ def balanco_atividade_impressao(atid: int, request: Request, db: Session = Depen
         "receitas": receitas,
         "custos": custos,
         "participantes": participantes,
+        "total_receita_prev": total_receita_prev,
+        "total_receita_real": total_receita_real,
+        "total_custo_prev": total_custo_prev,
+        "total_custo_real": total_custo_real,
         "saldo_prev": saldo_prev,
         "saldo_real": saldo_real,
         "grafico_base64": grafico_base64
     })
 
+
 @router.get("/calendario/receitas/{id}/editar")
 def obter_receita(id: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    receita = db.query(AtividadeReceita).filter_by(id=id, empid=usuario.empid).first()
+    receita = db.query(AtividadeReceita).filter_by(
+        id=id, empid=usuario.empid).first()
     if not receita:
         raise HTTPException(status_code=404, detail="Receita não encontrada")
     return {
@@ -602,6 +668,7 @@ def obter_receita(id: int, db: Session = Depends(get_db), usuario=Depends(obter_
         "tipo_lancamento": receita.tipo_lancamento.value,
         "tipo": receita.tipo
     }
+
 
 @router.post("/calendario/receitas/{id}/atualizar")
 def atualizar_receita(
@@ -614,7 +681,8 @@ def atualizar_receita(
     db: Session = Depends(get_db),
     usuario=Depends(obter_usuario_logado)
 ):
-    receita = db.query(AtividadeReceita).filter_by(id=id, empid=usuario.empid).first()
+    receita = db.query(AtividadeReceita).filter_by(
+        id=id, empid=usuario.empid).first()
     if not receita:
         raise HTTPException(status_code=404, detail="Receita não encontrada")
 
@@ -626,44 +694,56 @@ def atualizar_receita(
     db.commit()
     return {"sucesso": True}
 
+
 @router.get("/calendario/gerenciar", response_class=HTMLResponse)
 def gerenciar_calendarios(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    calendarios = db.query(Calendario).filter(Calendario.empid == usuario.empid).all()
+    calendarios = db.query(Calendario).filter(
+        Calendario.empid == usuario.empid).all()
     return templates.TemplateResponse("calendarios.html", {
         "request": request,
         "calendarios": calendarios,
         "usuario": usuario
     })
 
+
 @router.get("/calendario/gerenciar", response_class=HTMLResponse)
 def gerenciar_calendarios(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    calendarios = db.query(Calendario).filter(Calendario.empid == usuario.empid).all()
+    calendarios = db.query(Calendario).filter(
+        Calendario.empid == usuario.empid).all()
     return templates.TemplateResponse("calendarios.html", {
         "request": request,
         "calendarios": calendarios,
         "usuario": usuario
     })
+
 
 @router.post("/calendario/{calid}/editar")
 def editar_calendario(calid: int, calnome: str = Form(...), cor: str = Form(...), db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    cal = db.query(Calendario).filter(Calendario.calid == calid, Calendario.empid == usuario.empid).first()
+    cal = db.query(Calendario).filter(Calendario.calid == calid,
+                                      Calendario.empid == usuario.empid).first()
     if not cal:
-        raise HTTPException(status_code=404, detail="Calendário não encontrado")
+        raise HTTPException(
+            status_code=404, detail="Calendário não encontrado")
     cal.calnome = calnome
     cal.cor = cor
     db.commit()
     return RedirectResponse("/calendario/gerenciar", status_code=303)
 
+
 @router.post("/calendario/{calid}/excluir")
 def excluir_calendario(calid: int, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
-    cal = db.query(Calendario).filter(Calendario.calid == calid, Calendario.empid == usuario.empid).first()
+    cal = db.query(Calendario).filter(Calendario.calid == calid,
+                                      Calendario.empid == usuario.empid).first()
     if not cal:
-        raise HTTPException(status_code=404, detail="Calendário não encontrado")
+        raise HTTPException(
+            status_code=404, detail="Calendário não encontrado")
     if cal.atividades:
-        raise HTTPException(status_code=400, detail="Calendário possui atividades vinculadas")
+        raise HTTPException(
+            status_code=400, detail="Calendário possui atividades vinculadas")
     db.delete(cal)
     db.commit()
     return RedirectResponse("/calendario/gerenciar", status_code=303)
+
 
 @router.post("/calendario")
 def criar_calendario(calnome: str = Form(...), cor: str = Form(...), db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
@@ -671,6 +751,7 @@ def criar_calendario(calnome: str = Form(...), cor: str = Form(...), db: Session
     db.add(novo)
     db.commit()
     return RedirectResponse("/calendario/gerenciar", status_code=303)
+
 
 @router.get("/calendario/imprimir", response_class=HTMLResponse)
 def imprimir_agenda(
@@ -702,7 +783,8 @@ def imprimir_agenda(
         "ano": ano,
         "usuario": usuario
     })
-    
+
+
 @router.get("/calendario/imprimir/pdf")
 def gerar_pdf_agenda(
     mes: int,
@@ -731,7 +813,8 @@ def gerar_pdf_agenda(
         def header(self):
             self.set_font("Helvetica", 'B', 14)
             self.set_text_color(139, 30, 63)
-            self.cell(0, 10, f"Agenda de Atividades – {mes:02}/{ano}", ln=True, align='C')
+            self.cell(
+                0, 10, f"Agenda de Atividades – {mes:02}/{ano}", ln=True, align='C')
             self.ln(5)
 
         def footer(self):

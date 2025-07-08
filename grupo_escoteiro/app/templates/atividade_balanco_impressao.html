@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -26,6 +25,9 @@
     th {
       background: #f2f2f2;
     }
+    td.valor {
+      text-align: right;
+    }
     .section {
       margin-bottom: 2em;
     }
@@ -36,6 +38,16 @@
     .grafico {
       text-align: center;
       margin-top: 3em;
+    }
+    .bloco-final {
+      margin-top: 3em;
+      padding: 1em;
+      border: 2px dashed #8B1E3F;
+      background: #fdf7f9;
+    }
+    .bloco-final h3 {
+      margin-top: 0;
+      color: #8B1E3F;
     }
     @media print {
       .no-print { display: none; }
@@ -75,10 +87,10 @@
         {% for r in receitas %}
         <tr>
           <td>{{ r.descricao }}</td>
-          <td style="text-align: right">{{ '%.2f' % r.quantidade }}</td>
-          <td style="text-align: right">R$ {{ '%.2f' % r.valor_unitario }}</td>
-          <td style="text-align: right">{% if r.tipo_lancamento.value == "previsto" %}R$ {{ '%.2f' % (r.quantidade * r.valor_unitario) }}{% else %}-{% endif %}</td>
-          <td style="text-align: right">{% if r.tipo_lancamento.value == "realizado" %}R$ {{ '%.2f' % (r.quantidade * r.valor_unitario) }}{% else %}-{% endif %}</td>
+          <td class="valor">{{ '%.2f' % r.quantidade }}</td>
+          <td class="valor">R$ {{ '%.2f' % r.valor_unitario }}</td>
+          <td class="valor">{% if r.tipo_lancamento.value == "previsto" %}R$ {{ '%.2f' % (r.quantidade * r.valor_unitario) }}{% else %}-{% endif %}</td>
+          <td class="valor">{% if r.tipo_lancamento.value == "realizado" %}R$ {{ '%.2f' % (r.quantidade * r.valor_unitario) }}{% else %}-{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -101,10 +113,10 @@
         {% for c in custos %}
         <tr>
           <td>{{ c.descricao }}</td>
-          <td style="text-align: right">{{ '%.2f' % c.quantidade }}</td>
-          <td style="text-align: right">R$ {{ '%.2f' % c.valor_unitario }}</td>
-          <td style="text-align: right">{% if c.tipo_lancamento.value == "previsto" %}R$ {{ '%.2f' % (c.quantidade * c.valor_unitario) }}{% else %}-{% endif %}</td>
-          <td style="text-align: right">{% if c.tipo_lancamento.value == "realizado" %}R$ {{ '%.2f' % (c.quantidade * c.valor_unitario) }}{% else %}-{% endif %}</td>
+          <td class="valor">{{ '%.2f' % c.quantidade }}</td>
+          <td class="valor">R$ {{ '%.2f' % c.valor_unitario }}</td>
+          <td class="valor">{% if c.tipo_lancamento.value == "previsto" %}R$ {{ '%.2f' % (c.quantidade * c.valor_unitario) }}{% else %}-{% endif %}</td>
+          <td class="valor">{% if c.tipo_lancamento.value == "realizado" %}R$ {{ '%.2f' % (c.quantidade * c.valor_unitario) }}{% else %}-{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -118,6 +130,17 @@
 
   <div class="grafico">
     <img src="{{ grafico_base64 }}" alt="Gráfico comparativo" width="600">
+  </div>
+
+  <div class="bloco-final">
+    <h3>✅ Balanço Final</h3>
+    <p><strong>Receita Total Prevista:</strong> R$ {{ '%.2f' % total_receita_prev }}</p>
+    <p><strong>Receita Total Realizada:</strong> R$ {{ '%.2f' % total_receita_real }}</p>
+    <p><strong>Custo Total Previsto:</strong> R$ {{ '%.2f' % total_custo_prev }}</p>
+    <p><strong>Custo Total Realizado:</strong> R$ {{ '%.2f' % total_custo_real }}</p>
+    <hr style="margin: 1em 0;">
+    <p><strong>Saldo Final Previsto:</strong> <span style="color: {% if saldo_prev >= 0 %}green{% else %}red{% endif %}; font-weight: bold;">R$ {{ '%.2f' % saldo_prev }}</span></p>
+    <p><strong>Saldo Final Realizado:</strong> <span style="color: {% if saldo_real >= 0 %}green{% else %}red{% endif %}; font-weight: bold;">R$ {{ '%.2f' % saldo_real }}</span></p>
   </div>
 </body>
 </html>
