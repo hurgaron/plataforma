@@ -1,19 +1,35 @@
-
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from datetime import date
 from app.models import Adulto
 from app.auth import get_db, obter_usuario_logado
-
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
+# 🔁 Função auxiliar para serializar Adulto
+def adulto_para_dict(adulto: Adulto):
+    return {
+        "aducod": adulto.aducod,
+        "adunome": adulto.adunome,
+        "adudata_nasc": adulto.adudata_nasc.strftime('%Y-%m-%d') if isinstance(adulto.adudata_nasc, date) else '',
+        "aduregistro": adulto.aduregistro or '',
+        "adutelefone": adulto.adutelefone or '',
+        "aduemail": adulto.aduemail or '',
+        "aduendereco": adulto.aduendereco or ''
+    }
+
 @router.get("/adultos", response_class=HTMLResponse)
 def listar_adultos(request: Request, db: Session = Depends(get_db), usuario=Depends(obter_usuario_logado)):
     adultos = db.query(Adulto).filter(Adulto.empid == usuario.empid).all()
-    return templates.TemplateResponse("adultos.html", {"request": request, "adultos": adultos, "usuario": usuario})
+    adultos_serializados = [adulto_para_dict(a) for a in adultos]
+    return templates.TemplateResponse("adultos.html", {
+        "request": request,
+        "adultos": adultos_serializados,
+        "usuario": usuario
+    })
 
 @router.get("/adultos/novo", response_class=HTMLResponse)
 def novo_adulto(request: Request, usuario=Depends(obter_usuario_logado)):
@@ -60,11 +76,11 @@ def atualizar_adulto(
     db: Session = Depends(get_db)
 ):
     adulto = db.query(Adulto).filter(Adulto.aducod == aducod).first()
-    adulto.adunome = adunome
-    adulto.adudata_nasc = adudata_nasc
-    adulto.adutelefone = adutelefone
-    adulto.aduemail = aduemail
-    adulto.aduendereco = aduendereco
-    adulto.aduregistro = aduregistro
+    adulto.adunome = adunome # type: ignore
+    adulto.adudata_nasc = adudata_nasc # type: ignore
+    adulto.adutelefone = adutelefone # type: ignore
+    adulto.aduemail = aduemail # type: ignore
+    adulto.aduendereco = aduendereco # type: ignore
+    adulto.aduregistro = aduregistro # type: ignore
     db.commit()
     return RedirectResponse("/adultos", status_code=303)

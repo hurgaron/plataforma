@@ -58,8 +58,8 @@ def listar_usuarios(request: Request, db: Session = Depends(get_db), usuario=Dep
     })
 
 @router.get("/usuarios/novo", response_class=HTMLResponse)
-def novo_usuario_form(request: Request):
-    return templates.TemplateResponse("usuarios/form.html", {"request": request})
+def novo_usuario_form(request: Request, usuario=Depends(obter_usuario_logado)):
+    return templates.TemplateResponse("usuarios/form.html", {"request": request, "usuario":usuario})
 
 @router.post("/usuarios/novo")
 def criar_usuario(
@@ -115,8 +115,8 @@ def editar_empresa(
     if not empresa:
         raise HTTPException(status_code=404, detail="Empresa não encontrada")
 
-    empresa.empnome = empnome
-    empresa.empcnpj = empcnpj
+    empresa.empnome = empnome # type: ignore
+    empresa.empcnpj = empcnpj # type: ignore
     db.commit()
     return RedirectResponse(url="/", status_code=HTTP_303_SEE_OTHER)
 

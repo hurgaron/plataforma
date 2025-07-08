@@ -1,43 +1,482 @@
 {% extends "layout.html" %}
 {% block title %}Jovens{% endblock %}
+{% block breadcrumb %}Jovens{% endblock %}
+
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-semibold text-gray-800">Jovens Cadastrados</h2>
-    <a href="/jovens/novo" class="bg-[#8B1E3F] text-white px-4 py-2 rounded hover:bg-[#6e182f] text-sm shadow">
-      ➕ Novo Jovem
-    </a>
+<div class="max-w-7xl mx-auto space-y-6" x-data="jovensData()">
+  <!-- Header com título e ações -->
+  <div class="modern-card p-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+            <i class="fas fa-users text-white"></i>
+          </div>
+          Jovens Cadastrados
+        </h2>
+        <p class="text-gray-600 mt-1">Gerencie os jovens cadastrados no sistema</p>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <!-- Botão de exportar -->
+        <button @click="exportarDados()" 
+                class="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 hover:scale-105 font-medium">
+          <i class="fas fa-download"></i>
+          <span class="hidden sm:inline">Exportar</span>
+        </button>
+        
+        <!-- Botão principal -->
+        <a href="/jovens/novo" 
+           class="flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl font-medium">
+          <i class="fas fa-plus"></i>
+          <span>Novo Jovem</span>
+        </a>
+      </div>
+    </div>
   </div>
 
-  <div class="overflow-x-auto bg-white rounded-lg shadow ring-1 ring-gray-200">
-    <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-4 py-3 font-semibold text-gray-600">Nome</th>
-          <th class="px-4 py-3 font-semibold text-gray-600">Nascimento</th>
-          <th class="px-4 py-3 font-semibold text-gray-600">Registro</th>
-          <th class="px-4 py-3 font-semibold text-gray-600">Telefone</th>
-          <th class="px-4 py-3 font-semibold text-gray-600">E-mail</th>
-          <th class="px-4 py-3 font-semibold text-gray-600">Responsável</th>
-          <th class="px-4 py-3"></th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        {% for jovem in jovens %}
-        <tr class="hover:bg-gray-50">
-          <td class="px-4 py-2">{{ jovem.jovnome }}</td>
-          <td class="px-4 py-2">{{ jovem.jovdata_nasc.strftime('%d/%m/%Y') }}</td>
-          <td class="px-4 py-2">{{ jovem.jovregistro }}</td>
-          <td class="px-4 py-2">{{ jovem.jovtelefone }}</td>
-          <td class="px-4 py-2">{{ jovem.jovemail }}</td>
-          <td class="px-4 py-2">{{ jovem.resp_nome }}</td>
-          <td class="px-4 py-2 text-right">
-            <a href="/jovens/{{ jovem.jovcod }}/editar" class="text-blue-600 hover:underline">Editar</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Filtros e busca -->
+  <div class="modern-card p-6">
+    <div class="flex flex-col lg:flex-row gap-4">
+      <!-- Busca -->
+      <div class="flex-1">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fas fa-search text-gray-400"></i>
+          </div>
+          <input type="text" 
+                 x-model="busca"
+                 @input="filtrarJovens()"
+                 placeholder="Buscar por nome, telefone, email ou responsável..."
+                 class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+        </div>
+      </div>
+      
+      <!-- Filtros rápidos -->
+      <div class="flex flex-wrap gap-2">
+        <button @click="filtroIdade = 'todos'; filtrarJovens()"
+                :class="filtroIdade === 'todos' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-4 py-2 rounded-lg transition-all duration-200 font-medium">
+          Todos
+        </button>
+        <button @click="filtroIdade = 'criancas'; filtrarJovens()"
+                :class="filtroIdade === 'criancas' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-4 py-2 rounded-lg transition-all duration-200 font-medium">
+          Crianças
+        </button>
+        <button @click="filtroIdade = 'adolescentes'; filtrarJovens()"
+                :class="filtroIdade === 'adolescentes' ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                class="px-4 py-2 rounded-lg transition-all duration-200 font-medium">
+          Adolescentes
+        </button>
+      </div>
+    </div>
+    
+    <!-- Estatísticas rápidas -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
+      <div class="text-center">
+        <div class="text-2xl font-bold text-primary-600" x-text="totalJovens"></div>
+        <div class="text-sm text-gray-600">Total</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-blue-600" x-text="jovensFiltrados.length"></div>
+        <div class="text-sm text-gray-600">Exibindo</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-green-600" x-text="comResponsavel"></div>
+        <div class="text-sm text-gray-600">Com Responsável</div>
+      </div>
+      <div class="text-center">
+        <div class="text-2xl font-bold text-orange-600" x-text="comEmail"></div>
+        <div class="text-sm text-gray-600">Com Email</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de jovens -->
+  <div class="modern-card overflow-hidden">
+    <!-- Header da tabela -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">Lista de Jovens</h3>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <span x-text="jovensFiltrados.length"></span>
+          <span>de</span>
+          <span x-text="totalJovens"></span>
+          <span>jovens</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela responsiva -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                @click="ordenar('jovnome')">
+              <div class="flex items-center gap-2">
+                Nome
+                <i class="fas fa-sort text-gray-400"></i>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+                @click="ordenar('jovdata_nasc')">
+              <div class="flex items-center gap-2">
+                Nascimento
+                <i class="fas fa-sort text-gray-400"></i>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+              Registro
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+              Telefone
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">
+              E-mail
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+              Responsável
+            </th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Ações
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <template x-for="jovem in jovensFiltrados" :key="jovem.jovcod">
+            <tr class="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+                @click="verDetalhes(jovem)">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                      <span class="text-sm font-medium text-white" x-text="jovem.jovnome.charAt(0).toUpperCase()"></span>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900" x-text="jovem.jovnome"></div>
+                    <div class="text-sm text-gray-500 md:hidden">
+                      <span x-text="calcularIdade(jovem.jovdata_nasc)"></span> anos
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900" x-text="formatarData(jovem.jovdata_nasc)"></div>
+                <div class="text-sm text-gray-500">
+                  <span x-text="calcularIdade(jovem.jovdata_nasc)"></span> anos
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell" x-text="jovem.jovregistro || '-' "></td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden lg:table-cell">
+                <a :href="'tel:' + jovem.jovtelefone" 
+                   class="text-primary-600 hover:text-primary-800 transition-colors"
+                   @click.stop
+                   x-text="jovem.jovtelefone || '-' "></a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden xl:table-cell">
+                <a :href="'mailto:' + jovem.jovemail" 
+                   class="text-primary-600 hover:text-primary-800 transition-colors"
+                   @click.stop
+                   x-text="jovem.jovemail || '-' "></a>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden lg:table-cell" x-text="jovem.resp_nome || '-' "></td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex items-center justify-end gap-2">
+                  <button @click.stop="verDetalhes(jovem)"
+                          class="text-gray-400 hover:text-primary-600 transition-colors p-2 rounded-lg hover:bg-primary-50"
+                          title="Ver detalhes">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <a :href="'/jovens/' + jovem.jovcod + '/editar'"
+                     @click.stop
+                     class="text-gray-400 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-blue-50"
+                     title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      
+      <!-- Estado vazio -->
+      <div x-show="jovensFiltrados.length === 0" class="text-center py-12">
+        <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-search text-gray-400 text-xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhum jovem encontrado</h3>
+        <p class="text-gray-500 mb-6">Tente ajustar os filtros ou adicionar um novo jovem.</p>
+        <a href="/jovens/novo" 
+           class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+          <i class="fas fa-plus"></i>
+          Adicionar Jovem
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de detalhes -->
+  <div x-show="modalDetalhes" 
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0"
+       x-transition:enter-end="opacity-100"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100"
+       x-transition:leave-end="opacity-0"
+       class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+       @click="modalDetalhes = false">
+    
+    <div @click.stop 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform scale-100"
+         x-transition:leave-end="opacity-0 transform scale-95"
+         class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      
+      <!-- Header do modal -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+            <span class="text-lg font-bold text-white" x-text="jovemSelecionado?.jovnome?.charAt(0).toUpperCase()"></span>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-gray-900" x-text="jovemSelecionado?.jovnome"></h3>
+            <p class="text-gray-600">Detalhes do jovem</p>
+          </div>
+        </div>
+        <button @click="modalDetalhes = false" 
+                class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      
+      <!-- Conteúdo do modal -->
+      <div class="p-6 space-y-6" x-show="jovemSelecionado">
+        <!-- Informações pessoais -->
+        <div>
+          <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-user text-primary-600"></i>
+            Informações Pessoais
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+              <p class="text-gray-900" x-text="jovemSelecionado?.jovnome"></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+              <p class="text-gray-900">
+                <span x-text="formatarData(jovemSelecionado?.jovdata_nasc)"></span>
+                (<span x-text="calcularIdade(jovemSelecionado?.jovdata_nasc)"></span> anos)
+              </p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Registro</label>
+              <p class="text-gray-900" x-text="jovemSelecionado?.jovregistro || 'Não informado' "></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+              <p class="text-gray-900" x-text="jovemSelecionado?.jovendereco || 'Não informado' "></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Contato -->
+        <div>
+          <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-phone text-primary-600"></i>
+            Contato
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+              <p class="text-gray-900">
+                <a :href="'tel:' + jovemSelecionado?.jovtelefone" 
+                   class="text-primary-600 hover:text-primary-800 transition-colors"
+                   x-text="jovemSelecionado?.jovtelefone || 'Não informado' "></a>
+              </p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <p class="text-gray-900">
+                <a :href="'mailto:' + jovemSelecionado?.jovemail" 
+                   class="text-primary-600 hover:text-primary-800 transition-colors"
+                   x-text="jovemSelecionado?.jovemail || 'Não informado' "></a>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Responsável -->
+        <div>
+          <h4 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-user-friends text-primary-600"></i>
+            Responsável
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+              <p class="text-gray-900" x-text="jovemSelecionado?.resp_nome || 'Não informado' "></p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+              <p class="text-gray-900">
+                <a :href="'tel:' + jovemSelecionado?.resp_telefone" 
+                   class="text-primary-600 hover:text-primary-800 transition-colors"
+                   x-text="jovemSelecionado?.resp_telefone || 'Não informado' "></a>
+              </p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <p class="text-gray-900">
+                <a :href="'mailto:' + jovemSelecionado?.resp_email" 
+                   class="text-primary-600 hover:text-primary-800 transition-colors"
+                   x-text="jovemSelecionado?.resp_email || 'Não informado' "></a>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Ações -->
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+          <button @click="modalDetalhes = false"
+                  class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+            Fechar
+          </button>
+          <a :href="'/jovens/' + jovemSelecionado?.jovcod + '/editar'"
+             class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors flex items-center gap-2">
+            <i class="fas fa-edit"></i>
+            Editar
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<script>
+function jovensData() {
+  return {
+    busca: '',
+    filtroIdade: 'todos',
+    modalDetalhes: false,
+    jovemSelecionado: null,
+    ordenacao: { campo: '', direcao: 'asc' },
+
+    // Carregamento do JSON diretamente do script
+    jovens: JSON.parse(document.getElementById('jovens-json').textContent),
+    jovensFiltrados: [],
+
+    init() {
+      console.log("Jovens carregados:", this.jovens);
+      this.jovensFiltrados = [...this.jovens];
+      this.filtrarJovens();
+    },
+
+    get totalJovens() {
+      return this.jovens.length;
+    },
+
+    get comResponsavel() {
+      return this.jovens.filter(j => j.resp_nome).length;
+    },
+
+    get comEmail() {
+      return this.jovens.filter(j => j.jovemail).length;
+    },
+
+    filtrarJovens() {
+      let filtrados = [...this.jovens];
+
+      if (this.busca.trim()) {
+        const termo = this.busca.toLowerCase();
+        filtrados = filtrados.filter(jovem =>
+          jovem.jovnome.toLowerCase().includes(termo) ||
+          jovem.jovtelefone.includes(termo) ||
+          jovem.jovemail.toLowerCase().includes(termo) ||
+          jovem.resp_nome.toLowerCase().includes(termo)
+        );
+      }
+
+      if (this.filtroIdade !== 'todos') {
+        filtrados = filtrados.filter(jovem => {
+          const idade = this.calcularIdade(jovem.jovdata_nasc);
+          if (this.filtroIdade === 'criancas') return idade < 13;
+          if (this.filtroIdade === 'adolescentes') return idade >= 13 && idade < 18;
+          return true;
+        });
+      }
+
+      this.jovensFiltrados = filtrados;
+      this.aplicarOrdenacao();
+    },
+
+    ordenar(campo) {
+      if (this.ordenacao.campo === campo) {
+        this.ordenacao.direcao = this.ordenacao.direcao === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.ordenacao.campo = campo;
+        this.ordenacao.direcao = 'asc';
+      }
+      this.aplicarOrdenacao();
+    },
+
+    aplicarOrdenacao() {
+      if (!this.ordenacao.campo) return;
+
+      this.jovensFiltrados.sort((a, b) => {
+        let valorA = a[this.ordenacao.campo];
+        let valorB = b[this.ordenacao.campo];
+
+        if (this.ordenacao.campo === 'jovdata_nasc') {
+          valorA = new Date(valorA);
+          valorB = new Date(valorB);
+        }
+
+        if (valorA < valorB) return this.ordenacao.direcao === 'asc' ? -1 : 1;
+        if (valorA > valorB) return this.ordenacao.direcao === 'asc' ? 1 : -1;
+        return 0;
+      });
+    },
+
+    verDetalhes(jovem) {
+      this.jovemSelecionado = jovem;
+      this.modalDetalhes = true;
+    },
+
+    calcularIdade(dataNasc) {
+      const hoje = new Date();
+      const nascimento = new Date(dataNasc);
+      let idade = hoje.getFullYear() - nascimento.getFullYear();
+      const mes = hoje.getMonth() - nascimento.getMonth();
+
+      if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+      }
+
+      return idade;
+    },
+
+    formatarData(data) {
+      return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+    },
+
+    exportarDados() {
+      alert('Funcionalidade de exportação será implementada em breve!');
+    }
+  }
+}
+</script>
+
+<script type="application/json" id="jovens-json">
+  {{ jovens | tojson }}
+</script>
+
 {% endblock %}
+

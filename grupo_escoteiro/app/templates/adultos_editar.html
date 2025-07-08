@@ -1,58 +1,116 @@
 {% extends "layout.html" %}
 {% block title %}Editar Adulto{% endblock %}
+{% block breadcrumb %}Adultos / Editar{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Editar Adulto</h2>
-
-  <form method="post" action="/adultos/{{ adulto.aducod }}/editar"
-        class="space-y-6 bg-white p-6 rounded-lg shadow ring-1 ring-gray-200">
-
-    <div>
-      <label for="adunome" class="block text-sm font-medium text-gray-700">Nome</label>
-      <input type="text" id="adunome" name="adunome" value="{{ adulto.adunome }}" required
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="adudata_nasc" class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
-      <input type="date" id="adudata_nasc" name="adudata_nasc" value="{{ adulto.adudata_nasc }}" required
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="adutelefone" class="block text-sm font-medium text-gray-700">Telefone</label>
-      <input type="text" id="adutelefone" name="adutelefone" value="{{ adulto.adutelefone }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="aduemail" class="block text-sm font-medium text-gray-700">E-mail</label>
-      <input type="email" id="aduemail" name="aduemail" value="{{ adulto.aduemail }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="aduendereco" class="block text-sm font-medium text-gray-700">Endereço</label>
-      <input type="text" id="aduendereco" name="aduendereco" value="{{ adulto.aduendereco }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="aduregistro" class="block text-sm font-medium text-gray-700">Registro/Matrícula</label>
-      <input type="text" id="aduregistro" name="aduregistro" value="{{ adulto.aduregistro }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div class="flex justify-end gap-4 pt-2">
+<div class="max-w-4xl mx-auto space-y-6" x-data="editarAdultoData()">
+  <!-- Header -->
+  <div class="modern-card p-6">
+    <div class="flex items-center gap-4">
       <a href="/adultos"
-         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm rounded hover:bg-gray-100 text-gray-700">
-        Cancelar
+         class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+        <i class="fas fa-arrow-left text-xl"></i>
       </a>
-      <button type="submit"
-              class="inline-flex items-center px-6 py-2 bg-[#8B1E3F] text-white text-sm font-medium rounded hover:bg-[#6e182f] focus:ring-2 focus:ring-offset-2 focus:ring-[#8B1E3F]">
-        Salvar Alterações
-      </button>
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
+            <i class="fas fa-user-edit text-white"></i>
+          </div>
+          Editar Adulto
+        </h2>
+        <p class="text-gray-600 mt-1">Atualize as informações do adulto voluntário</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <form method="post" action="/adultos/{{ adulto.aducod }}/editar" @submit="validarFormulario($event)" class="space-y-6">
+    <div class="modern-card p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+          <label for="adunome" class="block text-sm font-medium text-gray-700 mb-2">Nome Completo <span class="text-red-500">*</span></label>
+          <input type="text" id="adunome" name="adunome" x-model="form.adunome" required
+                 class="block w-full rounded-xl border border-gray-300 shadow-sm px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div>
+          <label for="adudata_nasc" class="block text-sm font-medium text-gray-700 mb-2">Data de Nascimento <span class="text-red-500">*</span></label>
+          <input type="date" id="adudata_nasc" name="adudata_nasc" x-model="form.adudata_nasc" required
+                 class="block w-full rounded-xl border border-gray-300 shadow-sm px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div>
+          <label for="aduregistro" class="block text-sm font-medium text-gray-700 mb-2">Registro</label>
+          <input type="text" id="aduregistro" name="aduregistro" x-model="form.aduregistro"
+                 class="block w-full rounded-xl border border-gray-300 shadow-sm px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div>
+          <label for="adutelefone" class="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+          <input type="text" id="adutelefone" name="adutelefone" x-model="form.adutelefone"
+                 class="block w-full rounded-xl border border-gray-300 shadow-sm px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div>
+          <label for="aduemail" class="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
+          <input type="email" id="aduemail" name="aduemail" x-model="form.aduemail"
+                 class="block w-full rounded-xl border border-gray-300 shadow-sm px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div class="md:col-span-2">
+          <label for="aduendereco" class="block text-sm font-medium text-gray-700 mb-2">Endereço</label>
+          <input type="text" id="aduendereco" name="aduendereco" x-model="form.aduendereco"
+                 class="block w-full rounded-xl border border-gray-300 shadow-sm px-4 py-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+      </div>
+    </div>
+
+    <div class="modern-card p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <i class="fas fa-info-circle"></i>
+          <span>As alterações serão aplicadas imediatamente</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <a href="/adultos"
+             class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 bg-white rounded-xl hover:bg-gray-50 transition-all duration-200 hover:scale-105 font-medium">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </a>
+
+          <button type="submit"
+                  class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-medium bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg hover:from-primary-700 hover:to-primary-800 hover:scale-105 transition-all duration-200">
+            <i class="fas fa-save"></i>
+            Salvar Alterações
+          </button>
+        </div>
+      </div>
     </div>
   </form>
 </div>
+
+<script>
+function editarAdultoData() {
+  return {
+    form: {
+      adunome: '{{ adulto.adunome }}',
+      adudata_nasc: '{{ adulto.adudata_nasc }}',
+      aduregistro: '{{ adulto.aduregistro }}',
+      adutelefone: '{{ adulto.adutelefone }}',
+      aduemail: '{{ adulto.aduemail }}',
+      aduendereco: '{{ adulto.aduendereco }}'
+    },
+
+    validarFormulario(e) {
+      if (!this.form.adunome.trim() || !this.form.adudata_nasc.trim()) {
+        e.preventDefault();
+        alert('Preencha os campos obrigatórios: Nome e Data de Nascimento.');
+        return false;
+      }
+      return true;
+    }
+  }
+}
+</script>
 {% endblock %}

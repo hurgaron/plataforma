@@ -1,80 +1,440 @@
 {% extends "layout.html" %}
 {% block title %}Editar Jovem{% endblock %}
+{% block breadcrumb %}Jovens / Editar{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-  <h2 class="text-2xl font-semibold text-gray-800 mb-6">Editar Jovem</h2>
-
-  <form method="post" action="/jovens/{{ jovem.jovcod }}/editar"
-        class="space-y-6 bg-white p-6 rounded-lg shadow ring-1 ring-gray-200">
-
-    <div>
-      <label for="jovnome" class="block text-sm font-medium text-gray-700">Nome</label>
-      <input type="text" id="jovnome" name="jovnome" value="{{ jovem.jovnome }}" required
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="jovdata_nasc" class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
-      <input type="date" id="jovdata_nasc" name="jovdata_nasc" value="{{ jovem.jovdata_nasc }}" required
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="jovtelefone" class="block text-sm font-medium text-gray-700">Telefone</label>
-      <input type="text" id="jovtelefone" name="jovtelefone" value="{{ jovem.jovtelefone }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="jovemail" class="block text-sm font-medium text-gray-700">E-mail</label>
-      <input type="email" id="jovemail" name="jovemail" value="{{ jovem.jovemail }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="jovendereco" class="block text-sm font-medium text-gray-700">Endereço</label>
-      <input type="text" id="jovendereco" name="jovendereco" value="{{ jovem.jovendereco }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="jovregistro" class="block text-sm font-medium text-gray-700">Registro/Matrícula</label>
-      <input type="text" id="jovregistro" name="jovregistro" value="{{ jovem.jovregistro }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <hr class="my-6 border-t">
-
-    <h3 class="text-lg font-semibold text-gray-700">Responsável</h3>
-
-    <div>
-      <label for="resp_nome" class="block text-sm font-medium text-gray-700">Nome do Responsável</label>
-      <input type="text" id="resp_nome" name="resp_nome" value="{{ jovem.resp_nome }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="resp_telefone" class="block text-sm font-medium text-gray-700">Telefone do Responsável</label>
-      <input type="text" id="resp_telefone" name="resp_telefone" value="{{ jovem.resp_telefone }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div>
-      <label for="resp_email" class="block text-sm font-medium text-gray-700">E-mail do Responsável</label>
-      <input type="email" id="resp_email" name="resp_email" value="{{ jovem.resp_email }}"
-             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#8B1E3F] focus:border-[#8B1E3F] sm:text-sm">
-    </div>
-
-    <div class="flex justify-end gap-4 pt-4">
-      <a href="/jovens"
-         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm rounded hover:bg-gray-100 text-gray-700">
-        Cancelar
+<div class="max-w-4xl mx-auto space-y-6" x-data="editarJovemData()">
+  <!-- Header -->
+  <div class="modern-card p-6">
+    <div class="flex items-center gap-4">
+      <a href="/jovens" 
+         class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+        <i class="fas fa-arrow-left text-xl"></i>
       </a>
-      <button type="submit"
-              class="inline-flex items-center px-6 py-2 bg-[#8B1E3F] text-white text-sm font-medium rounded hover:bg-[#6e182f] focus:ring-2 focus:ring-offset-2 focus:ring-[#8B1E3F]">
-        Salvar Alterações
-      </button>
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+            <i class="fas fa-user-edit text-white"></i>
+          </div>
+          Editar Jovem
+        </h2>
+        <p class="text-gray-600 mt-1">Atualize as informações do jovem cadastrado</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <form method="post" 
+        action="/jovens/{{ jovem.jovcod }}/editar"
+        @submit="validarFormulario($event)"
+        class="space-y-6">
+
+    <!-- Informações Pessoais -->
+    <div class="modern-card p-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-user text-white text-sm"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900">Informações Pessoais</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Nome -->
+        <div class="md:col-span-2">
+          <label for="jovnome" class="block text-sm font-medium text-gray-700 mb-2">
+            Nome Completo <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="jovnome" 
+                   name="jovnome" 
+                   value="{{ jovem.jovnome }}" 
+                   required
+                   x-model="form.jovnome"
+                   @input="validarCampo('jovnome')"
+                   :class="erros.jovnome ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'"
+                   class="block w-full rounded-xl border shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <i x-show="!erros.jovnome && form.jovnome" class="fas fa-check text-green-500"></i>
+              <i x-show="erros.jovnome" class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+          </div>
+          <p x-show="erros.jovnome" x-text="erros.jovnome" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <!-- Data de Nascimento -->
+        <div>
+          <label for="jovdata_nasc" class="block text-sm font-medium text-gray-700 mb-2">
+            Data de Nascimento <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <input type="date" 
+                   id="jovdata_nasc" 
+                   name="jovdata_nasc" 
+                   value="{{ jovem.jovdata_nasc }}" 
+                   required
+                   x-model="form.jovdata_nasc"
+                   @input="validarCampo('jovdata_nasc')"
+                   :class="erros.jovdata_nasc ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'"
+                   class="block w-full rounded-xl border shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <i x-show="!erros.jovdata_nasc && form.jovdata_nasc" class="fas fa-check text-green-500"></i>
+              <i x-show="erros.jovdata_nasc" class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+          </div>
+          <p x-show="erros.jovdata_nasc" x-text="erros.jovdata_nasc" class="mt-1 text-sm text-red-600"></p>
+          <p x-show="form.jovdata_nasc && !erros.jovdata_nasc" class="mt-1 text-sm text-gray-600">
+            Idade: <span x-text="calcularIdade(form.jovdata_nasc)"></span> anos
+          </p>
+        </div>
+
+        <!-- Registro -->
+        <div>
+          <label for="jovregistro" class="block text-sm font-medium text-gray-700 mb-2">
+            Registro/Matrícula
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="jovregistro" 
+                   name="jovregistro" 
+                   value="{{ jovem.jovregistro }}"
+                   x-model="form.jovregistro"
+                   placeholder="Ex: 2024001"
+                   class="block w-full rounded-xl border border-gray-300 shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          </div>
+        </div>
+
+        <!-- Endereço -->
+        <div class="md:col-span-2">
+          <label for="jovendereco" class="block text-sm font-medium text-gray-700 mb-2">
+            Endereço Completo
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="jovendereco" 
+                   name="jovendereco" 
+                   value="{{ jovem.jovendereco }}"
+                   x-model="form.jovendereco"
+                   placeholder="Rua, número, bairro, cidade - CEP"
+                   class="block w-full rounded-xl border border-gray-300 shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações de Contato -->
+    <div class="modern-card p-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-phone text-white text-sm"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900">Informações de Contato</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Telefone -->
+        <div>
+          <label for="jovtelefone" class="block text-sm font-medium text-gray-700 mb-2">
+            Telefone
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="jovtelefone" 
+                   name="jovtelefone" 
+                   value="{{ jovem.jovtelefone }}"
+                   x-model="form.jovtelefone"
+                   @input="formatarTelefone(); validarCampo('jovtelefone')"
+                   :class="erros.jovtelefone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'"
+                   placeholder="(11) 99999-9999"
+                   class="block w-full rounded-xl border shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <i x-show="!erros.jovtelefone && form.jovtelefone && form.jovtelefone.length >= 14" class="fas fa-check text-green-500"></i>
+              <i x-show="erros.jovtelefone" class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+          </div>
+          <p x-show="erros.jovtelefone" x-text="erros.jovtelefone" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <!-- E-mail -->
+        <div>
+          <label for="jovemail" class="block text-sm font-medium text-gray-700 mb-2">
+            E-mail
+          </label>
+          <div class="relative">
+            <input type="email" 
+                   id="jovemail" 
+                   name="jovemail" 
+                   value="{{ jovem.jovemail }}"
+                   x-model="form.jovemail"
+                   @input="validarCampo('jovemail')"
+                   :class="erros.jovemail ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'"
+                   placeholder="exemplo@email.com"
+                   class="block w-full rounded-xl border shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <i x-show="!erros.jovemail && form.jovemail && validarEmail(form.jovemail)" class="fas fa-check text-green-500"></i>
+              <i x-show="erros.jovemail" class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+          </div>
+          <p x-show="erros.jovemail" x-text="erros.jovemail" class="mt-1 text-sm text-red-600"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações do Responsável -->
+    <div class="modern-card p-6">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-user-friends text-white text-sm"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900">Informações do Responsável</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Nome do Responsável -->
+        <div class="md:col-span-2">
+          <label for="resp_nome" class="block text-sm font-medium text-gray-700 mb-2">
+            Nome do Responsável
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="resp_nome" 
+                   name="resp_nome" 
+                   value="{{ jovem.resp_nome }}"
+                   x-model="form.resp_nome"
+                   placeholder="Nome completo do responsável"
+                   class="block w-full rounded-xl border border-gray-300 shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          </div>
+        </div>
+
+        <!-- Telefone do Responsável -->
+        <div>
+          <label for="resp_telefone" class="block text-sm font-medium text-gray-700 mb-2">
+            Telefone do Responsável
+          </label>
+          <div class="relative">
+            <input type="text" 
+                   id="resp_telefone" 
+                   name="resp_telefone" 
+                   value="{{ jovem.resp_telefone }}"
+                   x-model="form.resp_telefone"
+                   @input="formatarTelefoneResp()"
+                   placeholder="(11) 99999-9999"
+                   class="block w-full rounded-xl border border-gray-300 shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          </div>
+        </div>
+
+        <!-- E-mail do Responsável -->
+        <div>
+          <label for="resp_email" class="block text-sm font-medium text-gray-700 mb-2">
+            E-mail do Responsável
+          </label>
+          <div class="relative">
+            <input type="email" 
+                   id="resp_email" 
+                   name="resp_email" 
+                   value="{{ jovem.resp_email }}"
+                   x-model="form.resp_email"
+                   @input="validarCampo('resp_email')"
+                   :class="erros.resp_email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'"
+                   placeholder="exemplo@email.com"
+                   class="block w-full rounded-xl border shadow-sm transition-all duration-200 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <i x-show="!erros.resp_email && form.resp_email && validarEmail(form.resp_email)" class="fas fa-check text-green-500"></i>
+              <i x-show="erros.resp_email" class="fas fa-exclamation-triangle text-red-500"></i>
+            </div>
+          </div>
+          <p x-show="erros.resp_email" x-text="erros.resp_email" class="mt-1 text-sm text-red-600"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="modern-card p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <!-- Informações de salvamento -->
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <i class="fas fa-info-circle"></i>
+          <span>As alterações serão salvas automaticamente</span>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <a href="/jovens"
+             class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 bg-white rounded-xl hover:bg-gray-50 transition-all duration-200 hover:scale-105 font-medium">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </a>
+          
+          <button type="submit"
+                  :disabled="!formularioValido"
+                  :class="formularioValido ? 'bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl' : 'bg-gray-300 text-gray-500 cursor-not-allowed'"
+                  class="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl transition-all duration-200 hover:scale-105 font-medium">
+            <i class="fas fa-save"></i>
+            <span x-show="!salvando">Salvar Alterações</span>
+            <span x-show="salvando" class="flex items-center gap-2">
+              <i class="fas fa-spinner fa-spin"></i>
+              Salvando...
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   </form>
+
+  <!-- Toast de sucesso -->
+  <div x-show="mostrarToast" 
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 transform translate-y-2"
+       x-transition:enter-end="opacity-100 transform translate-y-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 transform translate-y-0"
+       x-transition:leave-end="opacity-0 transform translate-y-2"
+       class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+    <div class="flex items-center gap-2">
+      <i class="fas fa-check-circle"></i>
+      <span>Dados validados com sucesso!</span>
+    </div>
+  </div>
 </div>
+
+<script>
+function editarJovemData() {
+  return {
+    salvando: false,
+    mostrarToast: false,
+    
+    form: {
+      jovnome: "{{ jovem.jovnome }}",
+      jovdata_nasc: "{{ jovem.jovdata_nasc }}",
+      jovregistro: "{{ jovem.jovregistro or '' }}",
+      jovtelefone: "{{ jovem.jovtelefone or '' }}",
+      jovemail: "{{ jovem.jovemail or '' }}",
+      jovendereco: "{{ jovem.jovendereco or '' }}",
+      resp_nome: "{{ jovem.resp_nome or '' }}",
+      resp_telefone: "{{ jovem.resp_telefone or '' }}",
+      resp_email: "{{ jovem.resp_email or '' }}"
+    },
+    
+    erros: {},
+    
+    get formularioValido() {
+      return this.form.jovnome.trim() && 
+             this.form.jovdata_nasc && 
+             Object.keys(this.erros).length === 0;
+    },
+    
+    validarCampo(campo) {
+      delete this.erros[campo];
+      
+      switch(campo) {
+        case 'jovnome':
+          if (!this.form.jovnome.trim()) {
+            this.erros.jovnome = 'Nome é obrigatório';
+          } else if (this.form.jovnome.trim().length < 2) {
+            this.erros.jovnome = 'Nome deve ter pelo menos 2 caracteres';
+          }
+          break;
+          
+        case 'jovdata_nasc':
+          if (!this.form.jovdata_nasc) {
+            this.erros.jovdata_nasc = 'Data de nascimento é obrigatória';
+          } else {
+            const idade = this.calcularIdade(this.form.jovdata_nasc);
+            if (idade < 0) {
+              this.erros.jovdata_nasc = 'Data de nascimento não pode ser no futuro';
+            } else if (idade > 100) {
+              this.erros.jovdata_nasc = 'Verifique a data de nascimento';
+            }
+          }
+          break;
+          
+        case 'jovtelefone':
+          if (this.form.jovtelefone && !this.validarTelefone(this.form.jovtelefone)) {
+            this.erros.jovtelefone = 'Formato de telefone inválido';
+          }
+          break;
+          
+        case 'jovemail':
+          if (this.form.jovemail && !this.validarEmail(this.form.jovemail)) {
+            this.erros.jovemail = 'Formato de email inválido';
+          }
+          break;
+          
+        case 'resp_email':
+          if (this.form.resp_email && !this.validarEmail(this.form.resp_email)) {
+            this.erros.resp_email = 'Formato de email inválido';
+          }
+          break;
+      }
+    },
+    
+    validarFormulario(event) {
+      // Validar todos os campos
+      this.validarCampo('jovnome');
+      this.validarCampo('jovdata_nasc');
+      this.validarCampo('jovtelefone');
+      this.validarCampo('jovemail');
+      this.validarCampo('resp_email');
+      
+      if (!this.formularioValido) {
+        event.preventDefault();
+        return false;
+      }
+      
+      this.salvando = true;
+      this.mostrarToast = true;
+      
+      setTimeout(() => {
+        this.mostrarToast = false;
+      }, 3000);
+      
+      return true;
+    },
+    
+    calcularIdade(dataNasc) {
+      const hoje = new Date();
+      const nascimento = new Date(dataNasc);
+      let idade = hoje.getFullYear() - nascimento.getFullYear();
+      const mes = hoje.getMonth() - nascimento.getMonth();
+      
+      if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+      }
+      
+      return idade;
+    },
+    
+    validarEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
+    },
+    
+    validarTelefone(telefone) {
+      const regex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
+      return regex.test(telefone);
+    },
+    
+    formatarTelefone() {
+      let valor = this.form.jovtelefone.replace(/\D/g, '');
+      
+      if (valor.length <= 11) {
+        valor = valor.replace(/(\d{2})(\d)/, '($1) $2');
+        valor = valor.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
+        this.form.jovtelefone = valor;
+      }
+    },
+    
+    formatarTelefoneResp() {
+      let valor = this.form.resp_telefone.replace(/\D/g, '');
+      
+      if (valor.length <= 11) {
+        valor = valor.replace(/(\d{2})(\d)/, '($1) $2');
+        valor = valor.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
+        this.form.resp_telefone = valor;
+      }
+    }
+  }
+}
+</script>
 {% endblock %}
+
